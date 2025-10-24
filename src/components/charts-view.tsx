@@ -21,14 +21,14 @@ import { TradingViewWidget } from './tradingview-widget';
 import { tickerToSymbol } from '@/lib/data';
 
 export function ChartsView() {
-  const { cryptos, loading } = useCryptoData();
+  const { allCryptos, loading } = useCryptoData();
   const [selectedCrypto, setSelectedCrypto] = useState<Crypto | undefined>();
 
   useEffect(() => {
-    if (cryptos.length > 0 && !selectedCrypto) {
-      setSelectedCrypto(cryptos[0]);
+    if (allCryptos.length > 0 && !selectedCrypto) {
+      setSelectedCrypto(allCryptos[0]);
     }
-  }, [cryptos, selectedCrypto]);
+  }, [allCryptos, selectedCrypto]);
   
   const tradingViewSymbol = selectedCrypto ? tickerToSymbol[selectedCrypto.ticker] || `${selectedCrypto.ticker}USDT` : 'BTCUSDT';
 
@@ -46,7 +46,7 @@ export function ChartsView() {
       <Select
         defaultValue={selectedCrypto.id}
         onValueChange={(value) => {
-          const crypto = cryptos.find((c) => c.id === value);
+          const crypto = allCryptos.find((c) => c.id === value);
           if (crypto) setSelectedCrypto(crypto);
         }}
       >
@@ -54,7 +54,7 @@ export function ChartsView() {
           <SelectValue placeholder="Select a cryptocurrency" />
         </SelectTrigger>
         <SelectContent>
-          {cryptos.map((crypto) => (
+          {allCryptos.map((crypto) => (
             <SelectItem key={crypto.id} value={crypto.id}>
               {crypto.name} ({crypto.ticker})
             </SelectItem>
@@ -83,7 +83,7 @@ export function ChartsView() {
             </div>
             <div>
                 <p className="text-muted-foreground">24h Change</p>
-                <p className={`font-bold ${selectedCrypto.change24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>{selectedCrypto.change24h.toFixed(2)}%</p>
+                <p className={`font-bold ${selectedCrypto.change24h >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]'}`}>{selectedCrypto.change24h.toFixed(2)}%</p>
             </div>
             <div>
                 <p className="text-muted-foreground">Current Price</p>

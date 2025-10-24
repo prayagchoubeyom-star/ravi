@@ -62,7 +62,7 @@ export function WatchlistView() {
       <TableCell
         className={cn(
           'text-right font-medium',
-          crypto.change24h >= 0 ? 'text-green-500' : 'text-red-500'
+          crypto.change24h >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]'
         )}
       >
         {crypto.change24h >= 0 ? '+' : ''}

@@ -39,12 +39,12 @@ type TradeViewProps = {
 };
 
 export function TradeView({ ticker }: TradeViewProps) {
-    const { cryptos, loading } = useCryptoData();
+    const { allCryptos, loading } = useCryptoData();
     const { addOrder } = useTrading();
     const { toast } = useToast();
     const router = useRouter();
 
-    const crypto = cryptos.find(c => c.ticker === ticker);
+    const crypto = allCryptos.find(c => c.ticker === ticker);
     const tradingViewSymbol = crypto ? tickerToSymbol[crypto.ticker] || `${crypto.ticker}USDT` : `${ticker}USDT`;
 
     const form = useForm<z.infer<typeof orderSchema>>({

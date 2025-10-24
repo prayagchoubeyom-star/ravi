@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function PositionsView() {
-  const { cryptos: liveCryptoData, loading } = useCryptoData();
+  const { allCryptos, loading } = useCryptoData();
   const { positions, closePosition } = useTrading();
   const { toast } = useToast();
 
@@ -41,7 +41,7 @@ export function PositionsView() {
   }
 
   const positionsWithCurrentPrice = positions.map(pos => {
-      const currentCryptoData = liveCryptoData.find(c => c.ticker === pos.cryptoTicker);
+      const currentCryptoData = allCryptos.find(c => c.ticker === pos.cryptoTicker);
       return {
           ...pos,
           currentPrice: currentCryptoData?.price || 0,
@@ -75,10 +75,10 @@ export function PositionsView() {
             </div>
             <div>
                 <p className="text-sm text-muted-foreground">Total P/L</p>
-                <div className={cn('text-2xl font-bold', totalPL >= 0 ? 'text-green-500' : 'text-red-500')}>
+                <div className={cn('text-2xl font-bold', totalPL >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
                     {totalPL >= 0 ? '+' : ''}${totalPL.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
-                <div className={cn('text-sm font-medium', totalPL >= 0 ? 'text-green-500' : 'text-red-500')}>
+                <div className={cn('text-sm font-medium', totalPL >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
                     ({totalPL >= 0 ? '+' : ''}{totalPLPercent.toFixed(2)}%)
                 </div>
             </div>
@@ -118,7 +118,7 @@ export function PositionsView() {
                               <p>${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                               <p className="text-sm text-muted-foreground">Qty: {pos.quantity.toFixed(4)}</p>
                           </TableCell>
-                          <TableCell className={cn('text-right font-mono', pl >= 0 ? 'text-green-500' : 'text-red-500')}>
+                          <TableCell className={cn('text-right font-mono', pl >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
                               <p>{pl >= 0 ? '+' : ''}${pl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                               <p className="text-sm">{pl >= 0 ? '+' : ''}{plPercent.toFixed(2)}%</p>
                           </TableCell>

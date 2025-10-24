@@ -42,7 +42,7 @@ export function OrdersView() {
                         <span className="font-medium">{order.cryptoTicker}</span>
                     </div>
                 </TableCell>
-                <TableCell className={cn(order.type === 'Buy' ? 'text-green-500' : 'text-red-500')}>
+                <TableCell className={cn(order.type === 'Buy' ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
                     {order.type}
                 </TableCell>
                 <TableCell className="text-right font-mono">{order.amount.toFixed(4)}</TableCell>
