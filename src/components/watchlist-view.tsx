@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -10,32 +10,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import { cryptos as initialCryptos, type Crypto } from '@/lib/data';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { cn } from '@/lib/utils';
+import { useCryptoData } from '@/hooks/use-crypto-data';
+import { Skeleton } from './ui/skeleton';
 
 export function WatchlistView() {
-  const [cryptos, setCryptos] = useState<Crypto[]>(initialCryptos);
+  const { cryptos, loading } = useCryptoData();
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCryptos((prevCryptos) =>
-        prevCryptos.map((crypto) => {
-          const change = (Math.random() - 0.5) * (crypto.price * 0.01);
-          const newPrice = Math.max(0, crypto.price + change);
-          const newChange24h = crypto.change24h + (Math.random() - 0.5) * 0.5;
-          return {
-            ...crypto,
-            price: newPrice,
-            change24h: newChange24h,
-          };
-        })
-      );
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const filteredCryptos = cryptos.filter(
     (crypto) =>
@@ -61,7 +43,30 @@ export function WatchlistView() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredCryptos.map((crypto) => (
+            {loading && (
+              <>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <div>
+                          <Skeleton className="h-4 w-10 mb-1" />
+                          <Skeleton className="h-3 w-16" />
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-20 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-12 ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
+            {!loading && filteredCryptos.map((crypto) => (
               <TableRow key={crypto.id} className="cursor-pointer hover:bg-muted/50">
                 <TableCell>
                   <div className="flex items-center gap-3">

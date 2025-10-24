@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import {
   Card,
@@ -21,7 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { cryptos, chartData, type Crypto } from '@/lib/data';
+import { useCryptoData } from '@/hooks/use-crypto-data';
+import type { Crypto } from '@/lib/data';
 
 const chartConfig = {
   price: {
@@ -31,7 +32,34 @@ const chartConfig = {
 };
 
 export function ChartsView() {
-  const [selectedCrypto, setSelectedCrypto] = useState<Crypto>(cryptos[0]);
+  const { cryptos, loading } = useCryptoData();
+  const [selectedCrypto, setSelectedCrypto] = useState<Crypto | undefined>();
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (cryptos.length > 0 && !selectedCrypto) {
+      setSelectedCrypto(cryptos[0]);
+    }
+  }, [cryptos, selectedCrypto]);
+
+  useEffect(() => {
+    if (selectedCrypto) {
+      // Generate some random historical data for the chart
+      const data = Array.from({ length: 30 }, (_, i) => ({
+        date: `Day ${i + 1}`,
+        price: selectedCrypto.price * (1 + (Math.random() - 0.5) * 0.1) + i * (Math.random() - 0.5) * 50,
+      }));
+      setChartData(data);
+    }
+  }, [selectedCrypto]);
+
+  if (loading && !selectedCrypto) {
+    return <div className="p-4">Loading...</div>;
+  }
+
+  if (!selectedCrypto) {
+    return <div className="p-4">No data available</div>;
+  }
 
   return (
     <div className="p-4 space-y-4">
@@ -76,7 +104,7 @@ export function ChartsView() {
                   </linearGradient>
               </defs>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(-2)} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
               <YAxis
                 orientation="right"
                 tickLine={false}

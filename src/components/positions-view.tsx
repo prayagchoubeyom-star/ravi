@@ -14,28 +14,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { cryptos as initialCryptos, positions as initialPositions } from '@/lib/data';
+import { positions as initialPositions } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
+import { useCryptoData } from '@/hooks/use-crypto-data';
 
 export function PositionsView() {
-  const [cryptos, setCryptos] = useState(initialCryptos);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCryptos((prevCryptos) =>
-        prevCryptos.map((crypto) => {
-          const change = (Math.random() - 0.5) * (crypto.price * 0.01);
-          return { ...crypto, price: Math.max(0, crypto.price + change) };
-        })
-      );
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { cryptos: liveCryptoData, loading } = useCryptoData();
   
+  if (loading) {
+      return <div className="p-4 text-center">Loading portfolio...</div>
+  }
+
   const positionsWithCurrentPrice = initialPositions.map(pos => {
-      const currentCryptoData = cryptos.find(c => c.id === pos.crypto.id);
+      const currentCryptoData = liveCryptoData.find(c => c.ticker === pos.crypto.ticker);
       return {
           ...pos,
           currentPrice: currentCryptoData?.price || pos.crypto.price,
