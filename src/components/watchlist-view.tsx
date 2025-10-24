@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -23,13 +22,15 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card';
+import { Sheet, SheetContent } from './ui/sheet';
+import { TradeView } from './trade-view';
 
 export function WatchlistView() {
   const { allCryptos, loading } = useCryptoData();
   const { watchlist, addToWatchlist, removeFromWatchlist } = useTrading();
   const [searchTerm, setSearchTerm] = useState('');
-  const router = useRouter();
-
+  const [selectedCrypto, setSelectedCrypto] = useState<Crypto | null>(null);
+  
   const watchlistCryptos = allCryptos.filter(c => watchlist.includes(c.ticker));
 
   const searchResults = searchTerm 
@@ -41,12 +42,16 @@ export function WatchlistView() {
       ).slice(0, 20) // Limit search results
     : [];
   
-  const handleRowClick = (ticker: string) => {
-    router.push(`/trade/${ticker}`);
+  const handleRowClick = (crypto: Crypto) => {
+    setSelectedCrypto(crypto);
   }
 
   const renderCryptoRow = (crypto: Crypto, isWatchlist: boolean) => (
-    <TableRow key={crypto.id} onClick={() => isWatchlist && handleRowClick(crypto.ticker)} className={cn(isWatchlist && "cursor-pointer hover:bg-muted/50")}>
+    <TableRow 
+      key={crypto.id} 
+      onClick={() => isWatchlist && handleRowClick(crypto)} 
+      className={cn(isWatchlist && "cursor-pointer hover:bg-muted/50")}
+    >
       <TableCell>
         <div className="flex items-center gap-3">
           <CryptoIcon ticker={crypto.ticker} className="h-8 w-8" />
@@ -81,67 +86,74 @@ export function WatchlistView() {
   );
 
   return (
-    <div className="p-4 space-y-4">
-      <Input
-        placeholder="Search to add coins..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="bg-card"
-      />
-      
-      {searchTerm && (
-        <Card>
-            <CardContent className="p-0">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Asset</TableHead>
-                            <TableHead className="text-right">Price</TableHead>
-                            <TableHead className="text-right">24h</TableHead>
-                            <TableHead className="text-right">Add</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {loading && searchTerm && <TableRow><TableCell colSpan={4} className="text-center">Searching...</TableCell></TableRow>}
-                        {!loading && searchResults.map(crypto => renderCryptoRow(crypto, false))}
-                        {!loading && searchResults.length === 0 && searchTerm && (
-                            <TableRow><TableCell colSpan={4} className="text-center">No results found.</TableCell></TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-      )}
+    <>
+      <div className="p-4 space-y-4">
+        <Input
+          placeholder="Search to add coins..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="bg-card"
+        />
+        
+        {searchTerm && (
+          <Card>
+              <CardContent className="p-0">
+                  <Table>
+                      <TableHeader>
+                          <TableRow>
+                              <TableHead>Asset</TableHead>
+                              <TableHead className="text-right">Price</TableHead>
+                              <TableHead className="text-right">24h</TableHead>
+                              <TableHead className="text-right">Add</TableHead>
+                          </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                          {loading && searchTerm && <TableRow><TableCell colSpan={4} className="text-center">Searching...</TableCell></TableRow>}
+                          {!loading && searchResults.map(crypto => renderCryptoRow(crypto, false))}
+                          {!loading && searchResults.length === 0 && searchTerm && (
+                              <TableRow><TableCell colSpan={4} className="text-center">No results found.</TableCell></TableRow>
+                          )}
+                      </TableBody>
+                  </Table>
+              </CardContent>
+          </Card>
+        )}
 
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Asset</TableHead>
-              <TableHead className="text-right">Price</TableHead>
-              <TableHead className="text-right">24h</TableHead>
-              <TableHead className="text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading && watchlistCryptos.length === 0 && (
-              <>
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell colSpan={4}>
-                        <Skeleton className="h-8 w-full" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </>
-            )}
-            {!loading && watchlistCryptos.length > 0 && watchlistCryptos.map(crypto => renderCryptoRow(crypto, true))}
-            {!loading && watchlistCryptos.length === 0 && (
-                <TableRow><TableCell colSpan={4} className="text-center h-24">Your watchlist is empty. Search above to add coins.</TableCell></TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <div className="rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Asset</TableHead>
+                <TableHead className="text-right">Price</TableHead>
+                <TableHead className="text-right">24h</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading && watchlistCryptos.length === 0 && (
+                <>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell colSpan={4}>
+                          <Skeleton className="h-8 w-full" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              )}
+              {!loading && watchlistCryptos.length > 0 && watchlistCryptos.map(crypto => renderCryptoRow(crypto, true))}
+              {!loading && watchlistCryptos.length === 0 && (
+                  <TableRow><TableCell colSpan={4} className="text-center h-24">Your watchlist is empty. Search above to add coins.</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
+      <Sheet open={!!selectedCrypto} onOpenChange={(open) => !open && setSelectedCrypto(null)}>
+        <SheetContent side="bottom" className="h-[90%] flex flex-col p-0">
+          {selectedCrypto && <TradeView crypto={selectedCrypto} onClose={() => setSelectedCrypto(null)} />}
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }

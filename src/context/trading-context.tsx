@@ -8,6 +8,7 @@ interface TradingContextType {
   orders: Order[];
   positions: Position[];
   watchlist: string[];
+  balance: number;
   addToWatchlist: (ticker: string) => void;
   removeFromWatchlist: (ticker: string) => void;
   addOrder: (order: Omit<Order, 'id' | 'status' | 'date'>) => void;
@@ -19,6 +20,7 @@ const TradingContext = createContext<TradingContextType | undefined>(undefined);
 export function TradingProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [positions, setPositions] = useState<Position[]>(initialPositions);
+  const [balance, setBalance] = useState(50000);
   const [watchlist, setWatchlist] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
         const savedWatchlist = localStorage.getItem('watchlist');
@@ -56,15 +58,18 @@ export function TradingProvider({ children }: { children: ReactNode }) {
     
     setOrders(prev => [newOrder, ...prev]);
 
-    // Update positions if it's a "Buy" order for now
-    if (newOrder.type === 'Buy' && newOrder.status === 'Filled') {
+    // Update positions & balance
+    const cost = newOrder.amount * newOrder.price;
+
+    if (newOrder.type === 'Buy') {
+        setBalance(prev => prev - cost);
         setPositions(prevPositions => {
             const existingPositionIndex = prevPositions.findIndex(p => p.cryptoTicker === newOrder.cryptoTicker);
             if (existingPositionIndex > -1) {
                 // Update existing position
                 const existingPosition = prevPositions[existingPositionIndex];
                 const totalQuantity = existingPosition.quantity + newOrder.amount;
-                const totalCost = (existingPosition.avgPrice * existingPosition.quantity) + (newOrder.price * newOrder.amount);
+                const totalCost = (existingPosition.avgPrice * existingPosition.quantity) + cost;
                 const newAvgPrice = totalCost / totalQuantity;
 
                 const updatedPositions = [...prevPositions];
@@ -84,6 +89,28 @@ export function TradingProvider({ children }: { children: ReactNode }) {
                 return [...prevPositions, newPosition];
             }
         });
+    } else { // Sell order
+        setBalance(prev => prev + cost);
+        setPositions(prevPositions => {
+            const existingPositionIndex = prevPositions.findIndex(p => p.cryptoTicker === newOrder.cryptoTicker);
+            if (existingPositionIndex > -1) {
+                const existingPosition = prevPositions[existingPositionIndex];
+                const newQuantity = existingPosition.quantity - newOrder.amount;
+
+                if (newQuantity <= 0.00001) { // Epsilon for float comparison
+                    // Remove position if quantity is zero or negligible
+                    return prevPositions.filter(p => p.cryptoTicker !== newOrder.cryptoTicker);
+                } else {
+                    const updatedPositions = [...prevPositions];
+                    updatedPositions[existingPositionIndex] = {
+                        ...existingPosition,
+                        quantity: newQuantity,
+                    };
+                    return updatedPositions;
+                }
+            }
+            return prevPositions; // Or handle short selling if desired
+        });
     }
   };
 
@@ -101,15 +128,17 @@ export function TradingProvider({ children }: { children: ReactNode }) {
       price: 0, // In a real app, this would be the current market price
       date: new Date().toISOString(),
     };
-    setOrders(prev => [sellOrder, ...prev]);
-
-    // Remove position from state
-    setPositions(prev => prev.filter(p => p.cryptoTicker !== cryptoTicker));
+    addOrder({
+        cryptoTicker: sellOrder.cryptoTicker,
+        type: 'Sell',
+        amount: sellOrder.amount,
+        price: 0, // In a real app, get current price
+    });
   };
 
 
   return (
-    <TradingContext.Provider value={{ orders, positions, watchlist, addToWatchlist, removeFromWatchlist, addOrder, closePosition }}>
+    <TradingContext.Provider value={{ orders, positions, watchlist, balance, addToWatchlist, removeFromWatchlist, addOrder, closePosition }}>
       {children}
     </TradingContext.Provider>
   );
