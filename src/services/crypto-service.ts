@@ -1,5 +1,5 @@
 import type { BinanceTicker } from "@/lib/binance-types";
-import { cryptos, type Crypto } from "@/lib/data";
+import { cryptos, tickerToSymbol, type Crypto } from "@/lib/data";
 
 function formatNumber(num: number) {
   if (num > 1_000_000_000) {
@@ -13,20 +13,6 @@ function formatNumber(num: number) {
   }
   return num.toString();
 }
-
-// A mapping from the ticker in our app to the symbol on Binance
-const tickerToSymbol: Record<string, string> = {
-    BTC: 'BTCUSDT',
-    ETH: 'ETHUSDT',
-    SOL: 'SOLUSDT',
-    ADA: 'ADAUSDT',
-    XRP: 'XRPUSDT',
-    DOGE: 'DOGEUSDT',
-    AVAX: 'AVAXUSDT',
-    LINK: 'LINKUSDT',
-    MATIC: 'MATICUSDT',
-    LTC: 'LTCUSDT',
-};
 
 const symbolToTicker: Record<string, string> = Object.fromEntries(
     Object.entries(tickerToSymbol).map(([key, value]) => [value, key])

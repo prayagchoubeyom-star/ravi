@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import {
   Card,
   CardContent,
@@ -9,11 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
 import {
   Select,
   SelectContent,
@@ -23,35 +17,21 @@ import {
 } from '@/components/ui/select';
 import { useCryptoData } from '@/hooks/use-crypto-data';
 import type { Crypto } from '@/lib/data';
-
-const chartConfig = {
-  price: {
-    label: 'Price',
-    color: 'hsl(var(--primary))',
-  },
-};
+import { TradingViewWidget } from './tradingview-widget';
+import { tickerToSymbol } from '@/lib/data';
 
 export function ChartsView() {
   const { cryptos, loading } = useCryptoData();
   const [selectedCrypto, setSelectedCrypto] = useState<Crypto | undefined>();
-  const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
     if (cryptos.length > 0 && !selectedCrypto) {
       setSelectedCrypto(cryptos[0]);
     }
   }, [cryptos, selectedCrypto]);
+  
+  const tradingViewSymbol = selectedCrypto ? tickerToSymbol[selectedCrypto.ticker] || `${selectedCrypto.ticker}USDT` : 'BTCUSDT';
 
-  useEffect(() => {
-    if (selectedCrypto) {
-      // Generate some random historical data for the chart
-      const data = Array.from({ length: 30 }, (_, i) => ({
-        date: `Day ${i + 1}`,
-        price: selectedCrypto.price * (1 + (Math.random() - 0.5) * 0.1) + i * (Math.random() - 0.5) * 50,
-      }));
-      setChartData(data);
-    }
-  }, [selectedCrypto]);
 
   if (loading && !selectedCrypto) {
     return <div className="p-4">Loading...</div>;
@@ -82,49 +62,9 @@ export function ChartsView() {
         </SelectContent>
       </Select>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {selectedCrypto.name} ({selectedCrypto.ticker})
-          </CardTitle>
-          <CardDescription>
-            Last 30 days price movement
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig} className="h-64 w-full">
-            <AreaChart
-              data={chartData}
-              margin={{ left: -20, right: 10, top: 10, bottom: 0 }}
-            >
-              <defs>
-                  <linearGradient id="fillPrice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
-                  </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
-              <YAxis
-                orientation="right"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => `$${(value / 1000).toFixed(1)}k`}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="dot" />}
-              />
-              <Area
-                dataKey="price"
-                type="natural"
-                fill="url(#fillPrice)"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ChartContainer>
+      <Card className="h-[400px] w-full">
+        <CardContent className="p-0 h-full">
+          <TradingViewWidget symbol={tradingViewSymbol} />
         </CardContent>
       </Card>
       

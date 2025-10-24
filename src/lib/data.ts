@@ -23,6 +23,21 @@ export const cryptos: Crypto[] = [
   { id: 'litecoin', name: 'Litecoin', ticker: 'LTC', price: 0, change24h: 0, volume24h: '0', marketCap: '0' },
 ];
 
+// A mapping from the ticker in our app to the symbol on Binance
+export const tickerToSymbol: Record<string, string> = {
+    BTC: 'BTCUSDT',
+    ETH: 'ETHUSDT',
+    SOL: 'SOLUSDT',
+    ADA: 'ADAUSDT',
+    XRP: 'XRPUSDT',
+    DOGE: 'DOGEUSDT',
+    AVAX: 'AVAXUSDT',
+    LINK: 'LINKUSDT',
+    MATIC: 'MATICUSDT',
+    LTC: 'LTCUSDT',
+};
+
+
 export const user = {
   name: 'Alex Doe',
   email: 'alex.doe@example.com',
