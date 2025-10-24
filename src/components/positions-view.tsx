@@ -1,5 +1,4 @@
 'use client';
-import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -14,23 +13,39 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { positions as initialPositions } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
 import { useCryptoData } from '@/hooks/use-crypto-data';
+import { useTrading } from '@/context/trading-context';
+import { Button } from './ui/button';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export function PositionsView() {
   const { cryptos: liveCryptoData, loading } = useCryptoData();
-  
-  if (loading) {
+  const { positions, closePosition } = useTrading();
+  const { toast } = useToast();
+
+  if (loading && positions.length === 0) {
       return <div className="p-4 text-center">Loading portfolio...</div>
   }
 
-  const positionsWithCurrentPrice = initialPositions.map(pos => {
-      const currentCryptoData = liveCryptoData.find(c => c.ticker === pos.crypto.ticker);
+  const positionsWithCurrentPrice = positions.map(pos => {
+      const currentCryptoData = liveCryptoData.find(c => c.ticker === pos.cryptoTicker);
       return {
           ...pos,
-          currentPrice: currentCryptoData?.price || pos.crypto.price,
+          currentPrice: currentCryptoData?.price || 0,
+          cryptoName: currentCryptoData?.name || pos.cryptoTicker,
       };
   });
   
@@ -38,6 +53,14 @@ export function PositionsView() {
   const totalCost = positionsWithCurrentPrice.reduce((acc, pos) => acc + pos.quantity * pos.avgPrice, 0);
   const totalPL = totalValue - totalCost;
   const totalPLPercent = totalCost > 0 ? (totalPL / totalCost) * 100 : 0;
+
+  const handleExitPosition = (ticker: string) => {
+    closePosition(ticker);
+    toast({
+        title: "Position Closed",
+        description: `Your position in ${ticker} has been closed.`,
+    });
+  }
 
   return (
     <div className="p-4 space-y-4">
@@ -62,47 +85,77 @@ export function PositionsView() {
         </CardContent>
       </Card>
       
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Asset</TableHead>
-              <TableHead className="text-right">Value</TableHead>
-              <TableHead className="text-right">P/L</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {positionsWithCurrentPrice.map(pos => {
-                const currentValue = pos.quantity * pos.currentPrice;
-                const costBasis = pos.quantity * pos.avgPrice;
-                const pl = currentValue - costBasis;
-                const plPercent = (pl / costBasis) * 100;
+      {positionsWithCurrentPrice.length > 0 ? (
+        <div className="rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Asset</TableHead>
+                <TableHead className="text-right">Value</TableHead>
+                <TableHead className="text-right">P/L</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {positionsWithCurrentPrice.map(pos => {
+                  const currentValue = pos.quantity * pos.currentPrice;
+                  const costBasis = pos.quantity * pos.avgPrice;
+                  const pl = currentValue - costBasis;
+                  const plPercent = costBasis > 0 ? (pl / costBasis) * 100 : 0;
 
-                return (
-                    <TableRow key={pos.crypto.id}>
-                        <TableCell>
-                            <div className="flex items-center gap-3">
-                                <CryptoIcon ticker={pos.crypto.ticker} className="w-8 h-8"/>
-                                <div>
-                                    <p className="font-bold">{pos.crypto.ticker}</p>
-                                    <p className="text-sm text-muted-foreground font-mono">{pos.quantity} @ ${pos.avgPrice.toLocaleString()}</p>
-                                </div>
-                            </div>
-                        </TableCell>
-                        <TableCell className="text-right font-mono">
-                            <p>${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                            <p className="text-sm text-muted-foreground">Qty: {pos.quantity}</p>
-                        </TableCell>
-                        <TableCell className={cn('text-right font-mono', pl >= 0 ? 'text-green-500' : 'text-red-500')}>
-                            <p>{pl >= 0 ? '+' : ''}${pl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                            <p className="text-sm">{pl >= 0 ? '+' : ''}{plPercent.toFixed(2)}%</p>
-                        </TableCell>
-                    </TableRow>
-                )
-            })}
-          </TableBody>
-        </Table>
-      </div>
+                  return (
+                      <TableRow key={pos.cryptoTicker}>
+                          <TableCell>
+                              <div className="flex items-center gap-3">
+                                  <CryptoIcon ticker={pos.cryptoTicker} className="w-8 h-8"/>
+                                  <div>
+                                      <p className="font-bold">{pos.cryptoTicker}</p>
+                                      <p className="text-sm text-muted-foreground font-mono">{pos.quantity.toFixed(4)} @ ${pos.avgPrice.toLocaleString()}</p>
+                                  </div>
+                              </div>
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                              <p>${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                              <p className="text-sm text-muted-foreground">Qty: {pos.quantity.toFixed(4)}</p>
+                          </TableCell>
+                          <TableCell className={cn('text-right font-mono', pl >= 0 ? 'text-green-500' : 'text-red-500')}>
+                              <p>{pl >= 0 ? '+' : ''}${pl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                              <p className="text-sm">{pl >= 0 ? '+' : ''}{plPercent.toFixed(2)}%</p>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="sm">Exit</Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will close your entire position in {pos.cryptoTicker} at the current market price. This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleExitPosition(pos.cryptoTicker)}>
+                                    Confirm Exit
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TableCell>
+                      </TableRow>
+                  )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <Card className="mt-4">
+            <CardContent className="p-8 text-center">
+                <p className="text-muted-foreground">You have no open positions.</p>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

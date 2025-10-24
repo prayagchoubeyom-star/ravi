@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -18,12 +19,17 @@ import { Skeleton } from './ui/skeleton';
 export function WatchlistView() {
   const { cryptos, loading } = useCryptoData();
   const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
   const filteredCryptos = cryptos.filter(
     (crypto) =>
       crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       crypto.ticker.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  const handleRowClick = (ticker: string) => {
+    router.push(`/trade/${ticker}`);
+  }
 
   return (
     <div className="p-4 space-y-4">
@@ -67,7 +73,7 @@ export function WatchlistView() {
               </>
             )}
             {!loading && filteredCryptos.map((crypto) => (
-              <TableRow key={crypto.id} className="cursor-pointer hover:bg-muted/50">
+              <TableRow key={crypto.id} onClick={() => handleRowClick(crypto.ticker)} className="cursor-pointer hover:bg-muted/50">
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <CryptoIcon ticker={crypto.ticker} className="h-8 w-8" />

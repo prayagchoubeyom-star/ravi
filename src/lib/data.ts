@@ -50,20 +50,20 @@ export const accountSummary = {
 };
 
 export type Position = {
-  crypto: Pick<Crypto, 'id' | 'ticker' | 'name' | 'price'>;
+  cryptoTicker: string;
   quantity: number;
   avgPrice: number;
 };
 
-export const positions: Position[] = [
-  { crypto: { id: 'bitcoin', name: 'Bitcoin', ticker: 'BTC', price: 0 }, quantity: 0.5, avgPrice: 65000 },
-  { crypto: { id: 'ethereum', name: 'Ethereum', ticker: 'ETH', price: 0 }, quantity: 10, avgPrice: 3400 },
-  { crypto: { id: 'solana', name: 'Solana', ticker: 'SOL', price: 0 }, quantity: 100, avgPrice: 120 },
+export const initialPositions: Position[] = [
+  { cryptoTicker: 'BTC', quantity: 0.5, avgPrice: 65000 },
+  { cryptoTicker: 'ETH', quantity: 10, avgPrice: 3400 },
+  { cryptoTicker: 'SOL', quantity: 100, avgPrice: 120 },
 ];
 
 export type Order = {
   id: string;
-  crypto: Pick<Crypto, 'ticker'>;
+  cryptoTicker: string;
   type: 'Buy' | 'Sell';
   status: 'Open' | 'Filled' | 'Cancelled';
   amount: number;
@@ -71,10 +71,11 @@ export type Order = {
   date: string;
 };
 
-export const orders: Order[] = [
-  { id: '1', crypto: { ticker: 'BTC' }, type: 'Buy', status: 'Filled', amount: 0.1, price: 67500, date: '2024-05-20T10:00:00Z' },
-  { id: '2', crypto: { ticker: 'ETH' }, type: 'Sell', status: 'Filled', amount: 2, price: 3600, date: '2024-05-20T11:30:00Z' },
-  { id: '3', crypto: { ticker: 'SOL' }, type: 'Buy', status: 'Open', amount: 50, price: 148, date: '2024-05-21T09:00:00Z' },
-  { id: '4', crypto: { ticker: 'ADA' }, type: 'Buy', status: 'Cancelled', amount: 10000, price: 0.44, date: '2024-05-19T14:00:00Z' },
-  { id: '5', crypto: { ticker: 'XRP' }, type: 'Sell', status: 'Open', amount: 5000, price: 0.55, date: '2024-05-21T10:15:00Z' },
+export const initialOrders: Order[] = [
+  { id: '1', cryptoTicker: 'BTC', type: 'Buy', status: 'Filled', amount: 0.1, price: 67500, date: '2024-05-20T10:00:00Z' },
+  { id: '2', cryptoTicker: 'ETH', type: 'Sell', status: 'Filled', amount: 2, price: 3600, date: '2024-05-20T11:30:00Z' },
+  { id: '3', cryptoTicker: 'SOL', type: 'Buy', status: 'Open', amount: 50, price: 148, date: '2024-05-21T09:00:00Z' },
+  { id: '4', cryptoTicker: 'ADA', type: 'Buy', status: 'Cancelled', amount: 10000, price: 0.44, date: '2024-05-19T14:00:00Z' },
+  { id: '5', cryptoTicker: 'XRP', type: 'Sell', status: 'Open', amount: 5000, price: 0.55, date: '2024-05-21T10:15:00Z' },
 ];
+
