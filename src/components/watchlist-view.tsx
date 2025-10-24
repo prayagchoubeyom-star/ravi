@@ -15,30 +15,104 @@ import { CryptoIcon } from '@/components/crypto-icon';
 import { cn } from '@/lib/utils';
 import { useCryptoData } from '@/hooks/use-crypto-data';
 import { Skeleton } from './ui/skeleton';
+import { Button } from './ui/button';
+import { useTrading } from '@/context/trading-context';
+import { PlusCircle } from 'lucide-react';
+import type { Crypto } from '@/lib/data';
+import {
+  Card,
+  CardContent,
+} from '@/components/ui/card';
 
 export function WatchlistView() {
-  const { cryptos, loading } = useCryptoData();
+  const { allCryptos, loading } = useCryptoData();
+  const { watchlist, addToWatchlist, removeFromWatchlist } = useTrading();
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  const filteredCryptos = cryptos.filter(
-    (crypto) =>
-      crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      crypto.ticker.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const watchlistCryptos = allCryptos.filter(c => watchlist.includes(c.ticker));
+
+  const searchResults = searchTerm 
+    ? allCryptos.filter(
+        (crypto) =>
+          (crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          crypto.ticker.toLowerCase().includes(searchTerm.toLowerCase())) &&
+          !watchlist.includes(crypto.ticker)
+      ).slice(0, 20) // Limit search results
+    : [];
   
   const handleRowClick = (ticker: string) => {
     router.push(`/trade/${ticker}`);
   }
 
+  const renderCryptoRow = (crypto: Crypto, isWatchlist: boolean) => (
+    <TableRow key={crypto.id} onClick={() => isWatchlist && handleRowClick(crypto.ticker)} className={cn(isWatchlist && "cursor-pointer hover:bg-muted/50")}>
+      <TableCell>
+        <div className="flex items-center gap-3">
+          <CryptoIcon ticker={crypto.ticker} className="h-8 w-8" />
+          <div>
+            <div className="font-bold">{crypto.ticker}</div>
+            <div className="text-sm text-muted-foreground">{crypto.name}</div>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell className="text-right font-mono">
+        ${crypto.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      </TableCell>
+      <TableCell
+        className={cn(
+          'text-right font-medium',
+          crypto.change24h >= 0 ? 'text-green-500' : 'text-red-500'
+        )}
+      >
+        {crypto.change24h >= 0 ? '+' : ''}
+        {crypto.change24h.toFixed(2)}%
+      </TableCell>
+      <TableCell className="text-right">
+        {isWatchlist ? (
+            <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); removeFromWatchlist(crypto.ticker); }}>-</Button>
+        ) : (
+            <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); addToWatchlist(crypto.ticker); }}>
+                <PlusCircle className="h-4 w-4" />
+            </Button>
+        )}
+      </TableCell>
+    </TableRow>
+  );
+
   return (
     <div className="p-4 space-y-4">
       <Input
-        placeholder="Search up to 100 coins..."
+        placeholder="Search to add coins..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="bg-card"
       />
+      
+      {searchTerm && (
+        <Card>
+            <CardContent className="p-0">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Asset</TableHead>
+                            <TableHead className="text-right">Price</TableHead>
+                            <TableHead className="text-right">24h</TableHead>
+                            <TableHead className="text-right">Add</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {loading && searchTerm && <TableRow><TableCell colSpan={4} className="text-center">Searching...</TableCell></TableRow>}
+                        {!loading && searchResults.map(crypto => renderCryptoRow(crypto, false))}
+                        {!loading && searchResults.length === 0 && searchTerm && (
+                            <TableRow><TableCell colSpan={4} className="text-center">No results found.</TableCell></TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+      )}
+
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
@@ -46,57 +120,25 @@ export function WatchlistView() {
               <TableHead>Asset</TableHead>
               <TableHead className="text-right">Price</TableHead>
               <TableHead className="text-right">24h</TableHead>
+              <TableHead className="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading && (
+            {loading && watchlistCryptos.length === 0 && (
               <>
-                {Array.from({ length: 5 }).map((_, i) => (
+                {Array.from({ length: 3 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <div>
-                          <Skeleton className="h-4 w-10 mb-1" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-4 w-20 ml-auto" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-4 w-12 ml-auto" />
+                    <TableCell colSpan={4}>
+                        <Skeleton className="h-8 w-full" />
                     </TableCell>
                   </TableRow>
                 ))}
               </>
             )}
-            {!loading && filteredCryptos.map((crypto) => (
-              <TableRow key={crypto.id} onClick={() => handleRowClick(crypto.ticker)} className="cursor-pointer hover:bg-muted/50">
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <CryptoIcon ticker={crypto.ticker} className="h-8 w-8" />
-                    <div>
-                      <div className="font-bold">{crypto.ticker}</div>
-                      <div className="text-sm text-muted-foreground">{crypto.name}</div>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right font-mono">
-                  ${crypto.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </TableCell>
-                <TableCell
-                  className={cn(
-                    'text-right font-medium',
-                    crypto.change24h >= 0 ? 'text-green-500' : 'text-red-500'
-                  )}
-                >
-                  {crypto.change24h >= 0 ? '+' : ''}
-                  {crypto.change24h.toFixed(2)}%
-                </TableCell>
-              </TableRow>
-            ))}
+            {!loading && watchlistCryptos.length > 0 && watchlistCryptos.map(crypto => renderCryptoRow(crypto, true))}
+            {!loading && watchlistCryptos.length === 0 && (
+                <TableRow><TableCell colSpan={4} className="text-center h-24">Your watchlist is empty. Search above to add coins.</TableCell></TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

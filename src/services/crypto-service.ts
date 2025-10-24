@@ -1,5 +1,5 @@
 import type { BinanceTicker } from "@/lib/binance-types";
-import { cryptos, tickerToSymbol, type Crypto } from "@/lib/data";
+import { cryptos as initialCryptos, tickerToSymbol, type Crypto } from "@/lib/data";
 
 function formatNumber(num: number) {
   if (num > 1_000_000_000) {
@@ -14,42 +14,40 @@ function formatNumber(num: number) {
   return num.toString();
 }
 
-const symbolToTicker: Record<string, string> = Object.fromEntries(
-    Object.entries(tickerToSymbol).map(([key, value]) => [value, key])
-);
+const getCryptoName = (ticker: string): string => {
+    const known = initialCryptos.find(c => c.ticker === ticker);
+    if (known) return known.name;
+    return ticker;
+}
 
-export async function fetchCryptoData(): Promise<Crypto[]> {
-  try {
-    const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-    if (!response.ok) {
-      throw new Error(`Failed to fetch from Binance API: ${response.statusText}`);
-    }
-    const data: BinanceTicker[] = await response.json();
-    
-    const interestedSymbols = Object.values(tickerToSymbol);
-    
-    const liveData = data.filter(ticker => interestedSymbols.includes(ticker.symbol));
+export async function fetchAllCryptoData(): Promise<Crypto[]> {
+    try {
+        const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch from Binance API: ${response.statusText}`);
+        }
+        const data: BinanceTicker[] = await response.json();
 
-    const mergedData = cryptos.map(staticCrypto => {
-        const symbol = tickerToSymbol[staticCrypto.ticker];
-        const liveTickerData = liveData.find(d => d.symbol === symbol);
+        // We are only interested in USDT pairs
+        const usdtPairs = data.filter(d => d.symbol.endsWith('USDT'));
 
-        if (liveTickerData) {
+        const allData = usdtPairs.map(liveTickerData => {
+            const ticker = liveTickerData.symbol.replace('USDT', '');
             return {
-                ...staticCrypto,
+                id: liveTickerData.symbol,
+                ticker: ticker,
+                name: getCryptoName(ticker),
                 price: parseFloat(liveTickerData.lastPrice),
                 change24h: parseFloat(liveTickerData.priceChangePercent),
                 volume24h: formatNumber(parseFloat(liveTickerData.quoteVolume)),
                 marketCap: formatNumber(parseFloat(liveTickerData.lastPrice) * 10000000) // Dummy marketcap
             };
-        }
-        return staticCrypto; // Fallback to static data if API fails for a specific crypto
-    });
+        });
 
-    return mergedData;
-  } catch (error) {
-    console.error("Error fetching crypto data:", error);
-    // In case of an API error, return the static data so the app doesn't crash.
-    return cryptos;
-  }
+        return allData;
+
+    } catch (error) {
+        console.error("Error fetching all crypto data:", error);
+        return [];
+    }
 }

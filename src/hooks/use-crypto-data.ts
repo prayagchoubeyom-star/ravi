@@ -2,20 +2,21 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { Crypto } from '@/lib/data';
-import { fetchCryptoData } from '@/services/crypto-service';
+import { fetchAllCryptoData } from '@/services/crypto-service';
 
 export function useCryptoData() {
-  const [cryptos, setCryptos] = useState<Crypto[]>([]);
+  const [allCryptos, setAllCryptos] = useState<Crypto[]>([]);
   const [loading, setLoading] = useState(true);
   const isMounted = useRef(true);
 
   useEffect(() => {
     isMounted.current = true;
     async function loadData() {
+        if(!isMounted.current) return;
       try {
-        const data = await fetchCryptoData();
+        const data = await fetchAllCryptoData();
         if (isMounted.current) {
-            setCryptos(data);
+            setAllCryptos(data);
         }
       } catch (error) {
         console.error("Failed to fetch crypto data", error);
@@ -28,7 +29,7 @@ export function useCryptoData() {
 
     loadData();
 
-    const interval = setInterval(loadData, 2000); // Refresh every 2 seconds
+    const interval = setInterval(loadData, 5000); // Refresh every 5 seconds for all coins
 
     return () => {
         isMounted.current = false;
@@ -36,5 +37,5 @@ export function useCryptoData() {
     }
   }, []);
 
-  return { cryptos, loading };
+  return { allCryptos, loading };
 }

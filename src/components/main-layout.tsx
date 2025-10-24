@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutGrid, BarChart3, ArrowLeftRight, PieChart, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from './ui/scroll-area';
 
 interface NavItem {
   href: string;
@@ -52,7 +53,9 @@ const BottomNav = () => {
 export const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative flex h-full flex-col bg-background">
-      <main className="flex-1 overflow-y-auto pb-16">{children}</main>
+      <ScrollArea className="flex-1 pb-16">
+        {children}
+      </ScrollArea>
       <div className="absolute bottom-0 left-0 right-0 z-20">
         <BottomNav />
       </div>
