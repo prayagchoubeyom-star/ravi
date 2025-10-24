@@ -19,6 +19,7 @@ import { ChevronRight, X } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
+import { Label } from './ui/label';
 
 const orderSchema = z.object({
   type: z.enum(['buy', 'sell']),
