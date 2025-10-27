@@ -37,12 +37,14 @@ export function ProfileView() {
                     <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </Link>
             </Button>
-            <Button variant="ghost" className="w-full justify-between">
-                <span className="flex items-center gap-3">
-                    <ArrowUpFromLine className="w-5 h-5 text-muted-foreground" />
-                    <span>Withdraw</span>
-                </span>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            <Button asChild variant="ghost" className="w-full justify-between">
+                <Link href="/withdraw">
+                    <span className="flex items-center gap-3">
+                        <ArrowUpFromLine className="w-5 h-5 text-muted-foreground" />
+                        <span>Withdraw</span>
+                    </span>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </Link>
             </Button>
         </CardContent>
       </Card>
