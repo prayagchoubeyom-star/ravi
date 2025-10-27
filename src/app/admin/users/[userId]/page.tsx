@@ -25,10 +25,9 @@ import { ProtectedRoute } from "@/components/protected-route";
 import { useAuth } from "@/context/auth-context";
 
 
-export default function UserDetailsPage({ params }: { params: { userId: string } }) {
+export default function UserDetailsPage({ params: { userId } }: { params: { userId: string } }) {
     const router = useRouter();
     const { toast } = useToast();
-    const { userId } = params;
     const { users } = useAuth();
     const [editPrice, setEditPrice] = useState(0);
 
