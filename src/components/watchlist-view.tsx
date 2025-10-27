@@ -50,7 +50,7 @@ export function WatchlistView() {
 
     loadData(); // Initial load
 
-    const interval = setInterval(loadData, 2000); // Refresh every 2 seconds
+    const interval = setInterval(loadData, 1000); // Refresh every 1 second
 
     return () => clearInterval(interval);
   }, []);

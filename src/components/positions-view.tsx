@@ -44,7 +44,7 @@ export function PositionsView() {
       }
     }
     loadData();
-    const interval = setInterval(loadData, 2000); // Poll every 2 seconds
+    const interval = setInterval(loadData, 1000); // Poll every 1 second
     return () => clearInterval(interval);
   }, []);
 
