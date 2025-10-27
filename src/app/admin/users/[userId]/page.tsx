@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ProtectedRoute } from "@/components/protected-route";
 
 
 export default function UserDetailsPage({ params }: { params: { userId: string } }) {
@@ -51,7 +52,7 @@ export default function UserDetailsPage({ params }: { params: { userId: string }
     }
 
   return (
-    <>
+    <ProtectedRoute>
       <AppHeader title={`${user.name}'s Details`} hasBack />
       <div className="p-4 space-y-4">
         <Card>
@@ -119,6 +120,6 @@ export default function UserDetailsPage({ params }: { params: { userId: string }
             </CardContent>
         </Card>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

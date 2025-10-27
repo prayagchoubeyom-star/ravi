@@ -1,16 +1,19 @@
+
 'use client';
 
 import type { FC, ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, BarChart3, ArrowLeftRight, PieChart, User } from 'lucide-react';
+import { LayoutGrid, BarChart3, ArrowLeftRight, PieChart, User, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from './ui/scroll-area';
+import { useAuth } from '@/context/auth-context';
 
 interface NavItem {
   href: string;
   icon: FC<React.SVGProps<SVGSVGElement>>;
   label: string;
+  adminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -18,16 +21,28 @@ const navItems: NavItem[] = [
   { href: '/charts', icon: BarChart3, label: 'Charts' },
   { href: '/orders', icon: ArrowLeftRight, label: 'Orders' },
   { href: '/positions', icon: PieChart, label: 'Positions' },
+  { href: '/admin', icon: ShieldCheck, label: 'Admin', adminOnly: true },
   { href: '/profile', icon: User, label: 'Profile' },
 ];
 
 const BottomNav = () => {
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
+
+  const filteredNavItems = navItems.filter(item => {
+    if (item.adminOnly) {
+      return isAuthenticated;
+    }
+    return true;
+  });
+
+  // If login page, don't show nav
+  if (pathname === '/login') return null;
 
   return (
     <nav className="border-t bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-md items-center justify-around px-2">
-        {navItems.map((item) => {
+        {filteredNavItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
@@ -51,9 +66,12 @@ const BottomNav = () => {
 };
 
 export const MainLayout = ({ children }: { children: ReactNode }) => {
+  const pathname = usePathname();
+  const isLoginPage = pathname === '/login';
+
   return (
     <div className="relative flex h-full flex-col bg-background">
-      <ScrollArea className="flex-1 pb-16">
+      <ScrollArea className={cn("flex-1", !isLoginPage && "pb-16")}>
         {children}
       </ScrollArea>
       <div className="absolute bottom-0 left-0 right-0 z-20">

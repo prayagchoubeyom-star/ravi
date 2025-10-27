@@ -1,7 +1,9 @@
+
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/context/auth-context';
 import { user } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ChevronRight, ArrowDownToLine, ArrowUpFromLine, LogOut } from 'lucide-react';
@@ -9,6 +11,7 @@ import Link from 'next/link';
 
 export function ProfileView() {
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
+  const { logout } = useAuth();
 
   return (
     <div className="p-4 space-y-6">
@@ -49,7 +52,7 @@ export function ProfileView() {
         </CardContent>
       </Card>
 
-      <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-500/10 text-base">
+      <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-500 hover:bg-red-500/10 text-base" onClick={logout}>
           <span className="flex items-center gap-3">
               <LogOut className="w-5 h-5" />
               <span>Log Out</span>
