@@ -15,11 +15,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTrading } from '@/context/trading-context';
 import type { Crypto } from '@/lib/data';
-import { ChevronRight, X } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Separator } from './ui/separator';
-import { Label } from './ui/label';
+import { Label } from '@/components/ui/label';
 
 const orderSchema = z.object({
   type: z.enum(['buy', 'sell']),
@@ -59,6 +57,11 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
     const margin = quantity * price;
 
     function onSubmit(values: z.infer<typeof orderSchema>) {
+        if (values.type === 'buy' && margin > balance) {
+            form.setError('quantity', { message: 'Insufficient balance.' });
+            return;
+        }
+
         addOrder({
             cryptoTicker: crypto.ticker,
             type: values.type === 'buy' ? 'Buy' : 'Sell',
@@ -77,7 +80,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
   return (
     <div className="flex flex-col h-full bg-background">
         <header className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-xl font-bold">{orderSide === 'buy' ? "Buy" : "Sell"} {crypto.ticker}</h2>
+            <h2 className="text-xl font-bold">Trade {crypto.ticker}</h2>
             <Button variant="ghost" size="icon" onClick={onClose}>
                 <X className="h-5 w-5" />
             </Button>
@@ -85,15 +88,84 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
 
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1">
-                <div className="flex-1 p-4 space-y-6 overflow-y-auto">
-                    <Tabs defaultValue="regular">
-                        <TabsList className="grid w-full grid-cols-4">
-                            <TabsTrigger value="regular">Regular</TabsTrigger>
-                            <TabsTrigger value="cover" disabled>Cover</TabsTrigger>
-                            <TabsTrigger value="amo" disabled>AMO</TabsTrigger>
-                            <TabsTrigger value="iceberg" disabled>Iceberg</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
+                <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                    
+                    <FormField
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                            <FormItem className="space-y-0">
+                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
+                                    <FormItem>
+                                        <FormControl>
+                                            <RadioGroupItem value="buy" id="buy" className="peer sr-only" />
+                                        </FormControl>
+                                        <Label htmlFor="buy" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-600/10 peer-data-[state=checked]:text-blue-600">
+                                            BUY
+                                        </Label>
+                                    </FormItem>
+                                    <FormItem>
+                                        <FormControl>
+                                            <RadioGroupItem value="sell" id="sell" className="peer sr-only" />
+                                        </FormControl>
+                                        <Label htmlFor="sell" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-red-600 peer-data-[state=checked]:bg-red-600/10 peer-data-[state=checked]:text-red-600">
+                                            SELL
+                                        </Label>
+                                    </FormItem>
+                                </RadioGroup>
+                            </FormItem>
+                        )}
+                    />
+                    
+                    <FormField
+                        control={form.control}
+                        name="product"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Product</FormLabel>
+                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
+                                    <FormItem>
+                                        <FormControl>
+                                            <RadioGroupItem value="intraday" id="intraday" className="peer sr-only" />
+                                        </FormControl>
+                                        <Label htmlFor="intraday" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                            Intraday <span className="text-xs text-muted-foreground">MIS</span>
+                                        </Label>
+                                    </FormItem>
+                                    <FormItem>
+                                        <FormControl>
+                                            <RadioGroupItem value="longterm" id="longterm" className="peer sr-only" />
+                                        </FormControl>
+                                        <Label htmlFor="longterm" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                            Investment <span className="text-xs text-muted-foreground">CNC</span>
+                                        </Label>
+                                    </FormItem>
+                                </RadioGroup>
+                            </FormItem>
+                        )}
+                    />
+
+                     <FormField
+                        control={form.control}
+                        name="orderType"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Order Type</FormLabel>
+                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
+                                     {['Market', 'Limit'].map(type => (
+                                         <FormItem key={type}>
+                                            <FormControl>
+                                                <RadioGroupItem value={type.toLowerCase()} id={type.toLowerCase()} className="peer sr-only" />
+                                            </FormControl>
+                                            <Label htmlFor={type.toLowerCase()} className={cn("text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary")}>
+                                                {type}
+                                            </Label>
+                                        </FormItem>
+                                     ))}
+                                </RadioGroup>
+                            </FormItem>
+                        )}
+                    />
 
                     <div className="grid grid-cols-2 gap-4">
                         <FormField
@@ -112,61 +184,11 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Price</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} disabled={orderType === 'market'} placeholder={orderType === 'market' ? 'Market' : ''} className="text-base" /></FormControl>
+                                <FormControl><Input type="number" step="any" {...field} disabled={orderType === 'market'} placeholder={orderType === 'market' ? 'At Market' : ''} className="text-base" /></FormControl>
                                 </FormItem>
                             )}
                         />
                     </div>
-                    
-                    <FormField
-                        control={form.control}
-                        name="product"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Product</FormLabel>
-                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
-                                    <FormItem>
-                                        <FormControl>
-                                            <RadioGroupItem value="intraday" id="intraday" className="peer sr-only" />
-                                        </FormControl>
-                                        <Label htmlFor="intraday" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                            Intraday <span className="text-xs text-muted-foreground">MIS</span>
-                                        </Label>
-                                    </FormItem>
-                                    <FormItem>
-                                        <FormControl>
-                                            <RadioGroupItem value="longterm" id="longterm" className="peer sr-only" />
-                                        </FormControl>
-                                        <Label htmlFor="longterm" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                            Longterm <span className="text-xs text-muted-foreground">CNC</span>
-                                        </Label>
-                                    </FormItem>
-                                </RadioGroup>
-                            </FormItem>
-                        )}
-                    />
-                    
-                    <FormField
-                        control={form.control}
-                        name="orderType"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Type</FormLabel>
-                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-4 gap-2">
-                                     {['Market', 'Limit', 'SL', 'SL-M'].map(type => (
-                                         <FormItem key={type}>
-                                            <FormControl>
-                                                <RadioGroupItem value={type.toLowerCase()} id={type.toLowerCase()} className="peer sr-only" disabled={type.startsWith('SL')}/>
-                                            </FormControl>
-                                            <Label htmlFor={type.toLowerCase()} className={cn("text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary", type.startsWith('SL') && "opacity-50 cursor-not-allowed")}>
-                                                {type}
-                                            </Label>
-                                        </FormItem>
-                                     ))}
-                                </RadioGroup>
-                            </FormItem>
-                        )}
-                    />
                 </div>
 
                 <div className="p-4 border-t mt-auto bg-background">
@@ -175,10 +197,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                         <span>Available: <span className="text-foreground font-medium">${balance.toLocaleString()}</span></span>
                     </div>
                     <Button type="submit" size="lg" className={cn("w-full text-lg", orderSide === 'buy' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700' )}>
-                        <span className="flex-1 text-center">SWIPE TO {orderSide.toUpperCase()}</span>
-                        <div className="bg-white/20 rounded-full p-1">
-                            <ChevronRight className="h-6 w-6" />
-                        </div>
+                        {orderSide.toUpperCase()}
                     </Button>
                 </div>
             </form>
