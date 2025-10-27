@@ -31,20 +31,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
-  const [users, setUsers] = useState<User[]>(initialAdminUsers);
+  
+  const [users, setUsers] = useState<User[]>(() => {
+    if (typeof window !== 'undefined') {
+      const storedUsers = localStorage.getItem('appUsers');
+      if (storedUsers) {
+        return JSON.parse(storedUsers);
+      }
+    }
+    return initialAdminUsers;
+  });
+
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('appUsers', JSON.stringify(users));
+    }
+  }, [users]);
 
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuthenticated');
     const role = localStorage.getItem('userRole') as 'admin' | 'user' | null;
-    const storedUser = localStorage.getItem('user');
+    const storedUserJson = localStorage.getItem('user');
 
-    if (authStatus === 'true' && role && storedUser) {
-      setIsAuthenticated(true);
-      setUserRole(role);
-      setUser(JSON.parse(storedUser));
+    if (authStatus === 'true' && role && storedUserJson) {
+      const storedUser = JSON.parse(storedUserJson);
+      // Find the most up-to-date user info from the 'users' state
+      const currentUser = users.find(u => u.id === storedUser.id);
+      
+      if (currentUser) {
+        setIsAuthenticated(true);
+        setUserRole(role);
+        setUser(currentUser);
+        localStorage.setItem('user', JSON.stringify(currentUser)); // refresh user in storage
+      } else {
+        // Log out if user no longer exists
+        logout();
+      }
     }
-  }, []);
+  }, [users]); // Depend on users array to re-sync if it changes
 
   const login = (email: string, password: string): boolean => {
     const foundUser = users.find(u => u.email === email && u.password === password);
