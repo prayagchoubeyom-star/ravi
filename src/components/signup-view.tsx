@@ -53,8 +53,8 @@ export function SignupView() {
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-background p-4">
-       <div className="text-4xl font-bold mb-6 text-primary tracking-wider">
-        wellfiree
+       <div className="text-5xl font-extrabold mb-6 text-primary tracking-wider uppercase" style={{ textShadow: '2px 2px 4px hsl(var(--primary) / 0.4), 4px 4px 8px hsl(var(--background) / 0.3)' }}>
+        WELLFIREE
       </div>
       <Card className="w-full max-w-sm">
         <CardHeader>
