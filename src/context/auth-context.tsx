@@ -8,7 +8,7 @@ import { adminUsers } from '@/lib/data'; // Import mock users
 interface AuthContextType {
   isAuthenticated: boolean;
   userRole: 'admin' | 'user' | null;
-  login: (username: string, password: string) => boolean;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
 }
 
@@ -29,9 +29,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = (username: string, password: string) => {
+  const login = (email: string, password: string) => {
     // Check for admin credentials
-    if (username === 'wellfiree' && password === 'Arpit@54321') {
+    if (email === 'wellfiree' && password === 'Arpit@54321') {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userRole', 'admin');
       setIsAuthenticated(true);
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     
     // Check for regular user credentials from mock data
-    const user = adminUsers.find(u => u.name === username && u.password === password);
+    const user = adminUsers.find(u => u.email === email && u.password === password);
     if (user) {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userRole', 'user');
