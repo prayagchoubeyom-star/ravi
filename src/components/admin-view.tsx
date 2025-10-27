@@ -158,22 +158,22 @@ export function AdminView() {
                   </DialogContent>
               </Dialog>
           </CardHeader>
-          <CardContent>
-              <div className="rounded-lg border overflow-x-auto">
+          <CardContent className="p-0">
+              <div className="rounded-lg border-t overflow-x-auto">
                   <Table>
                       <TableHeader>
                       <TableRow>
-                          <TableHead className="px-2">User</TableHead>
-                          <TableHead className="px-2">Email</TableHead>
-                          <TableHead className="text-right px-2">Actions</TableHead>
+                          <TableHead className="px-4">User</TableHead>
+                          <TableHead className="px-4">Email</TableHead>
+                          <TableHead className="text-right px-4">Actions</TableHead>
                       </TableRow>
                       </TableHeader>
                       <TableBody>
                       {users.filter(u => u.email !== 'wellfiree').map((user) => (
                           <TableRow key={user.id}>
-                          <TableCell className="font-medium px-2 whitespace-nowrap">{user.name}</TableCell>
-                          <TableCell className="px-2">{user.email}</TableCell>
-                          <TableCell className="text-right px-2">
+                          <TableCell className="font-medium px-4 whitespace-nowrap">{user.name}</TableCell>
+                          <TableCell className="px-4 whitespace-nowrap">{user.email}</TableCell>
+                          <TableCell className="text-right px-4">
                               <div className="flex flex-wrap items-center justify-end gap-1">
                                   <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
                                       <Eye className="h-4 w-4" />
@@ -228,8 +228,8 @@ export function AdminView() {
               <CardTitle>Deposit Requests</CardTitle>
               <CardDescription>Approve or reject user deposit requests.</CardDescription>
           </CardHeader>
-          <CardContent>
-              <div className="rounded-lg border overflow-x-auto">
+          <CardContent className="p-0">
+              <div className="rounded-lg border-t overflow-x-auto">
                   <Table>
                       <TableHeader>
                           <TableRow>
@@ -268,8 +268,8 @@ export function AdminView() {
               <CardTitle>Withdrawal Requests</CardTitle>
               <CardDescription>Approve or reject user withdrawal requests.</CardDescription>
           </CardHeader>
-          <CardContent>
-              <div className="rounded-lg border overflow-x-auto">
+          <CardContent className="p-0">
+              <div className="rounded-lg border-t overflow-x-auto">
                   <Table>
                       <TableHeader>
                           <TableRow>
@@ -285,7 +285,7 @@ export function AdminView() {
                               <TableRow key={withdrawal.id}>
                                   <TableCell className="whitespace-nowrap">{withdrawal.userName}</TableCell>
                                   <TableCell>${withdrawal.amount.toLocaleString()}</TableCell>
-                                  <TableCell className="text-xs">
+                                  <TableCell className="text-xs whitespace-nowrap">
                                       <p>{withdrawal.upiId}</p>
                                   </TableCell>
                                   <TableCell>
