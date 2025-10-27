@@ -17,35 +17,28 @@ function formatNumber(num: number) {
 const getCryptoName = (ticker: string): string => {
     const known = initialCryptos.find(c => c.ticker === ticker);
     if (known) return known.name;
+    // For unknown tickers, just return the ticker itself.
+    // The API might return more symbols than we have in our static list.
     return ticker;
-}
-
-const getApiUrl = () => {
-  // If running on the server, use the absolute URL.
-  // The 'NEXT_PUBLIC_VERCEL_URL' is an example env var, you might need to adjust it for your hosting.
-  // For Firebase App Hosting, it might be a different variable or might not be needed if same-origin.
-  if (typeof window === 'undefined') {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || process.env.URL || 'http://localhost:9002';
-    return `${baseUrl.startsWith('http') ? '' : 'https://'}${baseUrl}/api/crypto`;
-  }
-  // If on the client, a relative path is fine.
-  return '/api/crypto';
 }
 
 export async function fetchAllCryptoData(): Promise<Crypto[]> {
     try {
-        const response = await fetch(getApiUrl(), {
-          // Revalidate data every 10 seconds
-          next: { revalidate: 10 }
+        const response = await fetch('https://api.binance.com/api/v3/ticker/24hr', {
+            // Revalidate data every 10 seconds for static generation, but client-side will fetch more often.
+            next: { revalidate: 10 }
         });
+
         if (!response.ok) {
-            console.error(`Failed to fetch from API route: ${response.statusText}`);
+            console.error(`Failed to fetch from Binance API: ${response.statusText}`);
             return [];
         }
+        
         const data: BinanceTicker[] = await response.json();
 
-        // We are only interested in USDT pairs
-        const usdtPairs = data.filter(d => d.symbol.endsWith('USDT'));
+        // We are only interested in USDT pairs that we have defined in our app
+        const relevantSymbols = new Set(Object.values(tickerToSymbol));
+        const usdtPairs = data.filter(d => relevantSymbols.has(d.symbol));
 
         const allData = usdtPairs.map(liveTickerData => {
             const ticker = liveTickerData.symbol.replace('USDT', '');
