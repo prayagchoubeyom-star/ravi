@@ -34,7 +34,7 @@ export function HistoryView() {
                             {userDeposits.length === 0 ? (
                                 <p className="text-center text-muted-foreground p-4">No deposit history.</p>
                             ) : (
-                                <div className="rounded-lg border">
+                                <div className="rounded-lg border overflow-x-auto">
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
@@ -70,7 +70,7 @@ export function HistoryView() {
                              {userWithdrawals.length === 0 ? (
                                 <p className="text-center text-muted-foreground p-4">No withdrawal history.</p>
                             ) : (
-                                <div className="rounded-lg border">
+                                <div className="rounded-lg border overflow-x-auto">
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
@@ -100,3 +100,5 @@ export function HistoryView() {
         </div>
     );
 }
+
+    
