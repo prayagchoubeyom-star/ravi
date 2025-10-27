@@ -22,9 +22,9 @@ const getCryptoName = (ticker: string): string => {
 
 export async function fetchAllCryptoData(): Promise<Crypto[]> {
     try {
-        const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+        const response = await fetch('/api/crypto');
         if (!response.ok) {
-            throw new Error(`Failed to fetch from Binance API: ${response.statusText}`);
+            throw new Error(`Failed to fetch from API route: ${response.statusText}`);
         }
         const data: BinanceTicker[] = await response.json();
 
