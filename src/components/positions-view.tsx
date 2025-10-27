@@ -5,14 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
 import { useCryptoData } from '@/hooks/use-crypto-data';
@@ -86,68 +78,62 @@ export function PositionsView() {
       </Card>
       
       {positionsWithCurrentPrice.length > 0 ? (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Asset</TableHead>
-                <TableHead className="text-right">Value</TableHead>
-                <TableHead className="text-right">P/L</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {positionsWithCurrentPrice.map(pos => {
-                  const currentValue = pos.quantity * pos.currentPrice;
-                  const costBasis = pos.quantity * pos.avgPrice;
-                  const pl = currentValue - costBasis;
-                  const plPercent = costBasis > 0 ? (pl / costBasis) * 100 : 0;
+        <div className="space-y-3">
+            {positionsWithCurrentPrice.map(pos => {
+                const currentValue = pos.quantity * pos.currentPrice;
+                const costBasis = pos.quantity * pos.avgPrice;
+                const pl = currentValue - costBasis;
+                const plPercent = costBasis > 0 ? (pl / costBasis) * 100 : 0;
 
-                  return (
-                      <TableRow key={pos.cryptoTicker}>
-                          <TableCell>
-                              <div className="flex items-center gap-3">
-                                  <CryptoIcon ticker={pos.cryptoTicker} className="w-8 h-8"/>
-                                  <div>
-                                      <p className="font-bold">{pos.cryptoTicker}</p>
-                                      <p className="text-sm text-muted-foreground font-mono">{pos.quantity.toFixed(4)} @ ${pos.avgPrice.toLocaleString()}</p>
-                                  </div>
-                              </div>
-                          </TableCell>
-                          <TableCell className="text-right font-mono">
-                              <p>${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                              <p className="text-sm text-muted-foreground">Qty: {pos.quantity.toFixed(4)}</p>
-                          </TableCell>
-                          <TableCell className={cn('text-right font-mono', pl >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
-                              <p>{pl >= 0 ? '+' : ''}${pl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                              <p className="text-sm">{pl >= 0 ? '+' : ''}{plPercent.toFixed(2)}%</p>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm">Exit</Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This will close your entire position in {pos.cryptoTicker} at the current market price. This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleExitPosition(pos.cryptoTicker)}>
-                                    Confirm Exit
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </TableCell>
-                      </TableRow>
-                  )
-              })}
-            </TableBody>
-          </Table>
+                return (
+                    <Card key={pos.cryptoTicker}>
+                        <CardContent className="p-4">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-3">
+                                    <CryptoIcon ticker={pos.cryptoTicker} className="w-10 h-10"/>
+                                    <div>
+                                        <p className="font-bold text-base">{pos.cryptoTicker}</p>
+                                        <p className="text-sm text-muted-foreground font-mono">{pos.quantity.toFixed(4)} @ ${pos.avgPrice.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-mono font-semibold">${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                    <p className={cn('text-sm font-mono', pl >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
+                                        {pl >= 0 ? '+' : ''}{plPercent.toFixed(2)}%
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center mt-4">
+                                <div className="text-sm">
+                                    <span className="text-muted-foreground">P/L: </span>
+                                    <span className={cn('font-medium', pl >= 0 ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
+                                        {pl >= 0 ? '+' : ''}${pl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" size="sm">Exit</Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This will close your entire position in {pos.cryptoTicker} at the current market price. This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleExitPosition(pos.cryptoTicker)}>
+                                        Confirm Exit
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )
+            })}
         </div>
       ) : (
         <Card className="mt-4">
