@@ -12,13 +12,15 @@ import { cn } from '@/lib/utils';
 import { useTrading } from '@/context/trading-context';
 import type { Order } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { format } from 'date-fns';
+import { Badge } from './ui/badge';
 
 export function OrdersView() {
   const { orders } = useTrading();
   const openOrders = orders.filter(o => o.status === 'Open');
   const historyOrders = orders.filter(o => o.status !== 'Open');
 
-  const renderOrderTable = (orders: Order[]) => {
+  const renderOrderTable = (orders: Order[], isHistory: boolean) => {
     if (orders.length === 0) {
         return <p className="text-muted-foreground text-center p-8">No orders to display.</p>
     }
@@ -28,9 +30,8 @@ export function OrdersView() {
             <TableHeader>
             <TableRow>
                 <TableHead>Asset</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right">Price</TableHead>
+                <TableHead>Details</TableHead>
+                <TableHead className="text-right">Total</TableHead>
             </TableRow>
             </TableHeader>
             <TableBody>
@@ -39,14 +40,23 @@ export function OrdersView() {
                 <TableCell>
                     <div className="flex items-center gap-2">
                         <CryptoIcon ticker={order.cryptoTicker} className="w-6 h-6" />
-                        <span className="font-medium">{order.cryptoTicker}</span>
+                        <div>
+                            <span className="font-medium">{order.cryptoTicker}</span>
+                            <p className={cn("text-sm", order.type === 'Buy' ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>{order.type}</p>
+                        </div>
                     </div>
                 </TableCell>
-                <TableCell className={cn(order.type === 'Buy' ? 'text-[hsl(142,76%,42%)]' : 'text-[hsl(0,84%,60%)]')}>
-                    {order.type}
+                <TableCell className="font-mono text-xs">
+                    <p>Qty: {order.amount.toFixed(4)}</p>
+                    <p>Price: ${order.price.toFixed(2)}</p>
+                    <p className="text-muted-foreground">{format(new Date(order.date), 'dd MMM yyyy, HH:mm')}</p>
                 </TableCell>
-                <TableCell className="text-right font-mono">{order.amount.toFixed(4)}</TableCell>
-                <TableCell className="text-right font-mono">${order.price.toFixed(2)}</TableCell>
+                <TableCell className="text-right">
+                    <p className="font-mono font-medium">${(order.amount * order.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    {isHistory && (
+                        <Badge variant={order.status === 'Filled' ? 'default' : 'destructive'} className="mt-1 capitalize text-xs">{order.status}</Badge>
+                    )}
+                </TableCell>
                 </TableRow>
             ))}
             </TableBody>
@@ -63,7 +73,7 @@ export function OrdersView() {
                 <CardDescription>Your orders that have not been filled yet.</CardDescription>
             </CardHeader>
             <CardContent>
-                {renderOrderTable(openOrders)}
+                {renderOrderTable(openOrders, false)}
             </CardContent>
         </Card>
          <Card>
@@ -72,7 +82,7 @@ export function OrdersView() {
                 <CardDescription>Your past filled or cancelled orders.</CardDescription>
             </CardHeader>
             <CardContent>
-                {renderOrderTable(historyOrders)}
+                {renderOrderTable(historyOrders, true)}
             </CardContent>
         </Card>
     </div>
