@@ -19,14 +19,17 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would call a user authentication service.
-    // For this prototype, we'll continue using the admin credentials.
     if (login(username, password)) {
       toast({
         title: 'Login Successful',
         description: 'Welcome!',
       });
-      router.push('/admin'); // Redirect admin to admin page
+      // Redirect admin to admin page, other users to home
+      if (username === 'wellfiree') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     } else {
       toast({
         variant: 'destructive',
