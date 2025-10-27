@@ -67,12 +67,14 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
     const cost = quantity * price;
 
     function onSubmit(values: z.infer<typeof orderSchema>) {
-        if (orderSide === 'buy' && cost > balance) {
+        const finalOrderSide = orderSide;
+
+        if (finalOrderSide === 'buy' && cost > balance) {
             form.setError('quantity', { message: 'Insufficient balance.' });
             return;
         }
 
-        if (orderSide === 'sell') {
+        if (finalOrderSide === 'sell') {
             if (!currentPosition) {
                 form.setError('quantity', { message: `You have no ${crypto.ticker} to sell.` });
                 return;
@@ -85,26 +87,39 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
 
         addOrder({
             cryptoTicker: crypto.ticker,
-            type: orderSide === 'buy' ? 'Buy' : 'Sell',
+            type: finalOrderSide === 'buy' ? 'Buy' : 'Sell',
             amount: values.quantity,
             price: values.product === 'limit' ? values.price! : crypto.price,
         });
 
         toast({
             title: 'Order Placed!',
-            description: `Your ${orderSide} order for ${values.quantity} ${crypto.ticker} has been submitted.`,
+            description: `Your ${finalOrderSide} order for ${values.quantity} ${crypto.ticker} has been submitted.`,
         });
         
         onClose();
     }
+    
+    const handleBuyClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setOrderSide('buy');
+        form.handleSubmit(onSubmit)();
+    };
+
+    const handleSellClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setOrderSide('sell');
+        form.handleSubmit(onSubmit)();
+    };
+
 
   return (
     <div className="flex flex-col h-full bg-background">
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1">
+            <form onSubmit={e => e.preventDefault()} className="flex flex-col flex-1">
                 <ScrollArea className="flex-1">
                     <div className="p-4 space-y-4">
-                        <Tabs defaultValue="buy" onValueChange={(value) => setOrderSide(value as 'buy' | 'sell')} className="w-full">
+                        <Tabs defaultValue={orderSide} onValueChange={(value) => setOrderSide(value as 'buy' | 'sell')} className="w-full">
                             <TabsList className="grid w-full grid-cols-2">
                                 <TabsTrigger value="buy">Buy</TabsTrigger>
                                 <TabsTrigger value="sell">Sell</TabsTrigger>
@@ -205,13 +220,13 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                         ) : (
                             <span>Holding: <span className="text-foreground font-medium">{currentPosition?.quantity.toFixed(6) || 0} {crypto.ticker}</span></span>
                         )}
-                        <span>Cost: <span className="text-foreground font-medium">${cost.toFixed(2)}</span></span>
+                        <span>Cost: <span className="text-foreground font-medium">${cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></span>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                        <Button type="submit" onClick={() => setOrderSide('buy')} size="lg" className="w-full text-lg bg-[hsl(142,76%,42%)] hover:bg-[hsl(142,76%,38%)] text-white">
+                        <Button onClick={handleBuyClick} size="lg" className="w-full text-lg bg-[hsl(142,76%,42%)] hover:bg-[hsl(142,76%,38%)] text-white">
                             Buy
                         </Button>
-                         <Button type="submit" onClick={() => setOrderSide('sell')} size="lg" className={cn("w-full text-lg bg-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,55%)] text-white", orderSide === 'sell' && !currentPosition && "opacity-50 cursor-not-allowed")} disabled={orderSide === 'sell' && !currentPosition}>
+                         <Button onClick={handleSellClick} size="lg" className={cn("w-full text-lg bg-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,55%)] text-white", !currentPosition && "opacity-50 cursor-not-allowed hover:bg-[hsl(0,84%,60%)]")} disabled={!currentPosition}>
                             Sell
                         </Button>
                     </div>
