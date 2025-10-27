@@ -18,6 +18,7 @@ import type { Crypto } from '@/lib/data';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { useMemo } from 'react';
 
 const orderSchema = z.object({
   type: z.enum(['buy', 'sell']),
@@ -36,8 +37,12 @@ type TradeViewProps = {
 };
 
 export function TradeView({ crypto, onClose }: TradeViewProps) {
-    const { addOrder, balance } = useTrading();
+    const { addOrder, balance, positions } = useTrading();
     const { toast } = useToast();
+
+    const currentPosition = useMemo(() => {
+        return positions.find(p => p.cryptoTicker === crypto.ticker);
+    }, [positions, crypto.ticker]);
 
     const form = useForm<z.infer<typeof orderSchema>>({
         resolver: zodResolver(orderSchema),
@@ -62,6 +67,17 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
             return;
         }
 
+        if (values.type === 'sell') {
+            if (!currentPosition) {
+                form.setError('quantity', { message: `You have no ${crypto.ticker} to sell.` });
+                return;
+            }
+            if (values.quantity > currentPosition.quantity) {
+                form.setError('quantity', { message: `Cannot sell more than you own (${currentPosition.quantity.toFixed(6)}).` });
+                return;
+            }
+        }
+
         addOrder({
             cryptoTicker: crypto.ticker,
             type: values.type === 'buy' ? 'Buy' : 'Sell',
@@ -79,13 +95,6 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
 
   return (
     <div className="flex flex-col h-full bg-background">
-        <header className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-xl font-bold">Trade {crypto.ticker}</h2>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-                <X className="h-5 w-5" />
-            </Button>
-        </header>
-
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1">
                 <div className="flex-1 p-4 space-y-4 overflow-y-auto">
@@ -106,9 +115,11 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                                     </FormItem>
                                     <FormItem>
                                         <FormControl>
-                                            <RadioGroupItem value="sell" id="sell" className="peer sr-only" />
+                                            <RadioGroupItem value="sell" id="sell" className="peer sr-only" disabled={!currentPosition} />
                                         </FormControl>
-                                        <Label htmlFor="sell" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-red-600 peer-data-[state=checked]:bg-red-600/10 peer-data-[state=checked]:text-red-600">
+                                        <Label htmlFor="sell" className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold",
+                                            !currentPosition ? "cursor-not-allowed opacity-50" : "hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-red-600 peer-data-[state=checked]:bg-red-600/10 peer-data-[state=checked]:text-red-600"
+                                        )}>
                                             SELL
                                         </Label>
                                     </FormItem>
@@ -189,14 +200,19 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                             )}
                         />
                     </div>
+                    {form.formState.errors.quantity && <p className="text-sm font-medium text-destructive">{form.formState.errors.quantity.message}</p>}
                 </div>
 
                 <div className="p-4 border-t mt-auto bg-background">
                      <div className="flex justify-between text-sm text-muted-foreground mb-4">
-                        <span>Approx. margin: <span className="text-foreground font-medium">${margin.toFixed(2)}</span></span>
-                        <span>Available: <span className="text-foreground font-medium">${balance.toLocaleString()}</span></span>
+                        {orderSide === 'buy' ? (
+                            <span>Available: <span className="text-foreground font-medium">${balance.toLocaleString()}</span></span>
+                        ) : (
+                            <span>Holding: <span className="text-foreground font-medium">{currentPosition?.quantity.toFixed(6) || 0} {crypto.ticker}</span></span>
+                        )}
+                        <span>Approx. cost: <span className="text-foreground font-medium">${margin.toFixed(2)}</span></span>
                     </div>
-                    <Button type="submit" size="lg" className={cn("w-full text-lg", orderSide === 'buy' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700' )}>
+                    <Button type="submit" size="lg" className={cn("w-full text-lg", orderSide === 'buy' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700', orderSide === 'sell' && !currentPosition && "opacity-50 cursor-not-allowed")} disabled={orderSide === 'sell' && !currentPosition}>
                         {orderSide.toUpperCase()}
                     </Button>
                 </div>
