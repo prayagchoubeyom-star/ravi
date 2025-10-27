@@ -74,7 +74,9 @@ export function OrdersView() {
                 <CardDescription>Your orders that have not been filled yet.</CardDescription>
             </CardHeader>
             <CardContent>
-                {renderOrderTable(openOrders, false)}
+                <div className="overflow-x-auto">
+                    {renderOrderTable(openOrders, false)}
+                </div>
             </CardContent>
         </Card>
          <Card>
@@ -83,7 +85,9 @@ export function OrdersView() {
                 <CardDescription>Your past filled or cancelled orders.</CardDescription>
             </CardHeader>
             <CardContent>
-                {renderOrderTable(historyOrders, true)}
+                <div className="overflow-x-auto">
+                    {renderOrderTable(historyOrders, true)}
+                </div>
             </CardContent>
         </Card>
     </div>
