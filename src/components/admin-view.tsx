@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { adminUsers as initialAdminUsers, adminDeposits, adminWithdrawals } from '@/lib/data';
+import { adminDeposits, adminWithdrawals } from '@/lib/data';
 import { Button } from './ui/button';
 import { Trash2, CheckCircle, XCircle, UserPlus, Eye, Edit } from 'lucide-react';
 import { Badge } from './ui/badge';
@@ -32,6 +32,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog"
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 
 const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg aria-hidden="true" viewBox="0 0 128 128" {...props}>
@@ -49,9 +50,9 @@ const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export function AdminView() {
   const { qrCodeUrl, setQrCodeUrl, addFunds } = useAdmin();
+  const { users, addUser, deleteUser } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
-  const [adminUsers, setAdminUsersState] = useState(initialAdminUsers);
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -80,10 +81,10 @@ export function AdminView() {
             email: newUserEmail,
             password: newUserPassword,
         };
-        setAdminUsersState(prevUsers => [newUser, ...prevUsers]);
+        addUser(newUser);
         toast({
             title: "User Created",
-            description: `User ${newUserName} has been created. In a real app, this would be saved to a database.`,
+            description: `User ${newUserName} has been created. They can now log in.`,
         });
         setNewUserName('');
         setNewUserEmail('');
@@ -98,7 +99,7 @@ export function AdminView() {
   };
   
   const handleDeleteUser = (userId: string) => {
-    setAdminUsersState(prevUsers => prevUsers.filter(user => user.id !== userId));
+    deleteUser(userId);
     toast({
         title: "User Deleted",
         description: `The user has been removed.`,
@@ -172,7 +173,7 @@ export function AdminView() {
                             </TableRow>
                             </TableHeader>
                             <TableBody>
-                            {adminUsers.map((user) => (
+                            {users.map((user) => (
                                 <TableRow key={user.id}>
                                 <TableCell className="font-medium px-2">{user.name}</TableCell>
                                 <TableCell className="hidden sm:table-cell px-2">{user.email}</TableCell>
