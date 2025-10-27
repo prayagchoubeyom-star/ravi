@@ -28,34 +28,32 @@ import { TradeView } from './trade-view';
 import { useAuth } from '@/context/auth-context';
 import { fetchAllCryptoData } from '@/services/crypto-service';
 
-export function WatchlistView({ initialData }: { initialData: Crypto[] }) {
-  const [allCryptos, setAllCryptos] = useState<Crypto[]>(initialData);
-  const [loading, setLoading] = useState(initialData.length === 0);
+export function WatchlistView() {
+  const [allCryptos, setAllCryptos] = useState<Crypto[]>([]);
+  const [loading, setLoading] = useState(true);
   const { watchlist, addToWatchlist, removeFromWatchlist, balance } = useTrading();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCrypto, setSelectedCrypto] = useState<Crypto | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    async function loadData() {
       try {
         const data = await fetchAllCryptoData();
         setAllCryptos(data);
       } catch (error) {
-        console.error("Failed to refresh crypto data", error);
-      }
-    }, 5000); // Refresh every 5 seconds
-
-    // Initial load if server-side fetch failed
-    if (initialData.length === 0) {
-      fetchAllCryptoData().then(data => {
-        setAllCryptos(data);
+        console.error("Failed to fetch crypto data", error);
+      } finally {
         setLoading(false);
-      });
+      }
     }
 
+    loadData(); // Initial load
+
+    const interval = setInterval(loadData, 5000); // Refresh every 5 seconds
+
     return () => clearInterval(interval);
-  }, [initialData]);
+  }, []);
   
   const watchlistCryptos = allCryptos.filter(c => watchlist.includes(c.ticker));
 
@@ -76,7 +74,7 @@ export function WatchlistView({ initialData }: { initialData: Crypto[] }) {
     <TableRow 
       key={crypto.id} 
       onClick={() => isWatchlist && handleRowClick(crypto)} 
-      className={cn(isWatchlist && "cursor-pointer hover:bg-muted/50")}
+      className={cn(isWatchlist && "cursor-pointer")}
     >
       <TableCell>
         <div className="flex items-center gap-3">
@@ -145,7 +143,6 @@ export function WatchlistView({ initialData }: { initialData: Crypto[] }) {
           placeholder="Search to add coins..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-card"
         />
         
         {searchTerm && (

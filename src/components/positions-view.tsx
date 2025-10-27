@@ -44,6 +44,8 @@ export function PositionsView() {
       }
     }
     loadData();
+    const interval = setInterval(loadData, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
   }, []);
 
   if (loading && positions.length === 0) {
@@ -54,14 +56,35 @@ export function PositionsView() {
       const currentCryptoData = allCryptos.find(c => c.ticker === pos.cryptoTicker);
       return {
           ...pos,
-          currentPrice: currentCryptoData?.price || 0,
+          currentPrice: currentCryptoData?.price || pos.avgPrice, // Fallback to avgPrice if not found
           cryptoName: currentCryptoData?.name || pos.cryptoTicker,
       };
   });
   
-  const totalValue = positionsWithCurrentPrice.reduce((acc, pos) => acc + pos.quantity * pos.currentPrice, 0);
-  const totalCost = positionsWithCurrentPrice.reduce((acc, pos) => acc + Math.abs(pos.quantity) * pos.avgPrice, 0);
-  const totalPL = totalValue - totalCost;
+  const totalValue = positionsWithCurrentPrice.reduce((acc, pos) => {
+    const quantity = pos.quantity;
+    // For short positions, value is what you owe. We calculate it as (entry_value - current_value) + entry_value
+    // A simpler P/L based approach is better for total value.
+    if (quantity > 0) { // Long
+      return acc + quantity * pos.currentPrice;
+    } else { // Short
+      const costBasis = Math.abs(quantity) * pos.avgPrice;
+      const pl = Math.abs(quantity) * pos.avgPrice - Math.abs(quantity) * pos.currentPrice;
+      return acc + (costBasis + pl);
+    }
+  }, 0);
+
+  const totalCost = positions.reduce((acc, pos) => acc + Math.abs(pos.quantity) * pos.avgPrice, 0);
+  
+  // Recalculate total P/L based on a clearer definition
+  const totalPL = positionsWithCurrentPrice.reduce((acc, pos) => {
+    const quantity = pos.quantity;
+    const currentValue = Math.abs(quantity) * pos.currentPrice;
+    const costBasis = Math.abs(quantity) * pos.avgPrice;
+    const pl = (quantity > 0) ? (currentValue - costBasis) : (costBasis - currentValue);
+    return acc + pl;
+  }, 0);
+  
   const totalPLPercent = totalCost > 0 ? (totalPL / totalCost) * 100 : 0;
 
   const handleExitPosition = (ticker: string, currentPrice: number) => {

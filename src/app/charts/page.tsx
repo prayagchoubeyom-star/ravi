@@ -1,13 +1,13 @@
+
 import { AppHeader } from "@/components/app-header";
 import { ChartsView } from "@/components/charts-view";
-import { fetchAllCryptoData } from "@/services/crypto-service";
+import { ProtectedRoute } from "@/components/protected-route";
 
-export default async function ChartsPage() {
-  const initialCryptoData = await fetchAllCryptoData();
+export default function ChartsPage() {
   return (
-    <>
+    <ProtectedRoute>
       <AppHeader title="Charts" />
-      <ChartsView initialData={initialCryptoData} />
-    </>
+      <ChartsView />
+    </ProtectedRoute>
   );
 }

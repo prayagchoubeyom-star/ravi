@@ -20,40 +20,50 @@ import { TradingViewWidget } from './tradingview-widget';
 import { tickerToSymbol } from '@/lib/data';
 import { fetchAllCryptoData } from '@/services/crypto-service';
 
-export function ChartsView({ initialData }: { initialData: Crypto[] }) {
-  const [allCryptos, setAllCryptos] = useState<Crypto[]>(initialData);
-  const [loading, setLoading] = useState(initialData.length === 0);
-  const [selectedCrypto, setSelectedCrypto] = useState<Crypto | undefined>(initialData[0]);
+export function ChartsView() {
+  const [allCryptos, setAllCryptos] = useState<Crypto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCrypto, setSelectedCrypto] = useState<Crypto | undefined>();
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const data = await fetchAllCryptoData();
-        setAllCryptos(data);
-        // update selected crypto with fresh data
-        setSelectedCrypto(prevSelected => {
-          if (!prevSelected) return data.length > 0 ? data[0] : undefined;
-          return data.find(c => c.id === prevSelected.id) || prevSelected;
-        });
-      } catch (error) {
-        console.error("Failed to refresh crypto data", error);
-      }
-    }, 5000); // Refresh every 5 seconds
+    async function loadData() {
+        try {
+            const data = await fetchAllCryptoData();
+            setAllCryptos(data);
+            if (loading) { // On first successful load
+                setSelectedCrypto(data.length > 0 ? data[0] : undefined);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error("Failed to fetch crypto data", error);
+            if(loading) setLoading(false);
+        }
+    }
+    
+    loadData(); // initial load
+    const interval = setInterval(loadData, 5000); // Refresh every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
-    if (allCryptos.length > 0 && !selectedCrypto) {
+    // This effect updates the selected crypto with the latest data from allCryptos
+    if (selectedCrypto) {
+      const updatedCrypto = allCryptos.find(c => c.id === selectedCrypto.id);
+      if (updatedCrypto) {
+        setSelectedCrypto(updatedCrypto);
+      }
+    } else if (allCryptos.length > 0 && !selectedCrypto) {
+      // If no crypto is selected yet, default to the first one
       setSelectedCrypto(allCryptos[0]);
     }
-  }, [allCryptos, selectedCrypto]);
+  }, [allCryptos]); // This runs whenever allCryptos is updated
   
   const tradingViewSymbol = selectedCrypto ? tickerToSymbol[selectedCrypto.ticker] || `${selectedCrypto.ticker}USDT` : 'BTCUSDT';
 
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+    return <div className="p-4">Loading charts...</div>;
   }
 
   if (!selectedCrypto) {
@@ -63,7 +73,7 @@ export function ChartsView({ initialData }: { initialData: Crypto[] }) {
   return (
     <div className="p-4 space-y-4">
       <Select
-        defaultValue={selectedCrypto.id}
+        value={selectedCrypto.id}
         onValueChange={(value) => {
           const crypto = allCryptos.find((c) => c.id === value);
           if (crypto) setSelectedCrypto(crypto);
