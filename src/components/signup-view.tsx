@@ -52,8 +52,11 @@ export function SignupView() {
   };
 
   return (
-    <div className="flex items-center justify-center h-full bg-background">
-      <Card className="w-full max-w-sm mx-4">
+    <div className="flex flex-col items-center justify-center h-full bg-background p-4">
+       <div className="text-4xl font-bold mb-6 text-primary tracking-wider">
+        wellfiree
+      </div>
+      <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Sign Up</CardTitle>
           <CardDescription>Create a new account to start trading.</CardDescription>
