@@ -105,7 +105,7 @@ export function WatchlistView() {
                 <Button asChild variant="outline" size="sm" className="px-2">
                     <Link href="/withdraw">
                         <ArrowUpFromLine className="w-4 h-4 mr-1"/>
-                        Withdraw
+                        Withdrawal
                     </Link>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="px-2">

@@ -81,7 +81,7 @@ export function WithdrawView() {
 
         <Card>
             <CardHeader>
-                <CardTitle>Withdraw Funds</CardTitle>
+                <CardTitle>Withdrawal Request</CardTitle>
                 <CardDescription>Enter your UPI ID and the amount to withdraw.</CardDescription>
             </CardHeader>
             <CardContent>

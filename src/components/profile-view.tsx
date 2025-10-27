@@ -17,16 +17,11 @@ const menuItems = [
 ];
 
 export function ProfileView() {
-  const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
   const { logout, user: authUser } = useAuth();
 
   return (
     <div className="p-4 space-y-6">
       <div className="flex items-center gap-4">
-        <Avatar className="h-20 w-20">
-            {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt={authUser?.name} data-ai-hint={userAvatar.imageHint} />}
-            <AvatarFallback>{authUser?.name.charAt(0)}</AvatarFallback>
-        </Avatar>
         <div>
             <h2 className="text-2xl font-bold">{authUser?.name}</h2>
             <p className="text-muted-foreground">{authUser?.email}</p>

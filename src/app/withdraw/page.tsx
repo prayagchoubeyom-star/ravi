@@ -4,7 +4,7 @@ import { WithdrawView } from "@/components/withdraw-view";
 export default function WithdrawPage() {
   return (
     <>
-      <AppHeader title="Withdraw Funds" hasBack />
+      <AppHeader title="Withdrawal" hasBack />
       <WithdrawView />
     </>
   );
