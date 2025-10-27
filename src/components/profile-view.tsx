@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { user } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Bell, ChevronRight, Fingerprint, LogOut, Shield } from 'lucide-react';
+import { Bell, ChevronRight, Fingerprint, LogOut, Shield, Wallet, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 
 export function ProfileView() {
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
@@ -43,6 +43,28 @@ export function ProfileView() {
                 </Label>
                 <Switch id="face-id" defaultChecked />
             </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle>Wallet</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+            <Button variant="ghost" className="w-full justify-between">
+                <span className="flex items-center gap-3">
+                    <ArrowDownToLine className="w-5 h-5 text-muted-foreground" />
+                    <span>Deposit</span>
+                </span>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </Button>
+            <Button variant="ghost" className="w-full justify-between">
+                <span className="flex items-center gap-3">
+                    <ArrowUpFromLine className="w-5 h-5 text-muted-foreground" />
+                    <span>Withdraw</span>
+                </span>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </Button>
         </CardContent>
       </Card>
 
