@@ -28,7 +28,7 @@ export function DepositView() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const router = useRouter();
-  const { qrCodeUrl } = useTrading();
+  const { qrCodeUrl, addFunds } = useTrading();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -47,10 +47,14 @@ export function DepositView() {
       return;
     }
 
-    // In a real app, you would handle the file upload to a server here.
+    // In a real app, you would handle the file upload and a webhook would credit the account.
+    // For this prototype, we'll simulate a deposit of $1,000 for demonstration purposes.
+    const mockDepositAmount = 1000;
+    addFunds(mockDepositAmount);
+
     toast({
       title: 'Deposit Submitted',
-      description: 'Your deposit request has been received and is being processed.',
+      description: `Your deposit request has been received. $${mockDepositAmount.toLocaleString()} has been added to your balance.`,
     });
 
     // Reset form and navigate back to profile

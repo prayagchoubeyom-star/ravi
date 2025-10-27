@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Form,
@@ -25,7 +26,7 @@ const withdrawalSchema = z.object({
 });
 
 export function WithdrawView() {
-  const { balance } = useTrading();
+  const { balance, withdrawFunds } = useTrading();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -48,9 +49,12 @@ export function WithdrawView() {
       return;
     }
 
+    // Deduct funds from balance
+    withdrawFunds(values.amount);
+
     toast({
       title: 'Withdrawal Request Submitted',
-      description: `Your request to withdraw $${values.amount} has been received.`,
+      description: `Your request to withdraw $${values.amount.toLocaleString()} has been received.`,
     });
 
     router.push('/profile');

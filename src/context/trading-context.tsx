@@ -16,6 +16,7 @@ interface TradingContextType {
   addOrder: (order: Omit<Order, 'id' | 'status' | 'date'>) => void;
   closePosition: (cryptoTicker: string, currentPrice: number) => void;
   addFunds: (amount: number, userId?: string) => void;
+  withdrawFunds: (amount: number) => void;
   setQrCodeUrl: (url: string) => void;
 }
 
@@ -41,18 +42,17 @@ export function TradingProvider({ children }: { children: ReactNode }) {
   }, [watchlist]);
 
   const addFunds = (amount: number, userId?: string) => {
-    // In a real app with multiple users, you'd use the userId to target the correct user's balance.
-    // For this mock setup, we'll just update the single global balance.
-    // If the amount is a full replacement value (from edit), we set it directly.
-    // If it's an addition, we add to it. Let's assume admin edit is a replacement for simplicity.
-    if (userId) { // This implies an admin is editing a specific user's funds
+    // Admin editing a user's balance sets the balance directly.
+    if (userId) {
         console.log(`Setting funds for user ${userId} to ${amount}`);
-        // In a real app, you'd find the user and update their balance.
-        // For now, let's just assume we are editing the main user's balance.
         setBalance(amount);
-    } else { // This is a standard deposit addition
+    } else { // User deposit adds to the balance.
         setBalance(prev => prev + amount);
     }
+  }
+
+  const withdrawFunds = (amount: number) => {
+    setBalance(prev => prev - amount);
   }
 
   const addToWatchlist = (ticker: string) => {
@@ -149,7 +149,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <TradingContext.Provider value={{ orders, positions, watchlist, balance, qrCodeUrl, addToWatchlist, removeFromWatchlist, addOrder, closePosition, addFunds, setQrCodeUrl }}>
+    <TradingContext.Provider value={{ orders, positions, watchlist, balance, qrCodeUrl, addToWatchlist, removeFromWatchlist, addOrder, closePosition, addFunds, withdrawFunds, setQrCodeUrl }}>
       {children}
     </TradingContext.Provider>
   );
