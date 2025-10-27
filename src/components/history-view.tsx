@@ -47,7 +47,7 @@ export function HistoryView() {
                                             {userDeposits.map((deposit) => (
                                                 <TableRow key={deposit.id}>
                                                     <TableCell>${deposit.amount.toLocaleString()}</TableCell>
-                                                    <TableCell className="text-xs text-muted-foreground">{format(new Date(deposit.date), 'dd MMM yyyy')}</TableCell>
+                                                    <TableCell className="text-xs text-muted-foreground">{format(deposit.date, 'dd MMM yyyy')}</TableCell>
                                                     <TableCell className="text-right">
                                                         <Badge variant={deposit.status === 'Approved' ? 'default' : deposit.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{deposit.status}</Badge>
                                                     </TableCell>

@@ -84,13 +84,13 @@ export const adminUsers = [
     { id: '5', name: 'Test User 1', email: 'test1@gmail.com', password: 'password123', balance: 500 },
 ];
 
-export const adminDeposits: Deposit[] = [
+export const adminDepositsData: Omit<Deposit, 'date'> & { date: string }[] = [
     { id: 'dep1', userId: '2', userName: 'Jane Smith', amount: 1000, status: 'Pending', date: '2024-05-22T10:00:00Z' },
     { id: 'dep2', userId: '1', userName: 'Alex Doe', amount: 500, status: 'Approved', date: '2024-05-21T15:30:00Z' },
     { id: 'dep3', userId: '3', userName: 'John Johnson', amount: 2500, status: 'Rejected', date: '2024-05-20T12:00:00Z' },
 ];
 
-export const adminWithdrawals: Withdrawal[] = [
+export const adminWithdrawalsData: Omit<Withdrawal, 'date'> & { date: string }[] = [
     { id: 'wd1', userId: '1', userName: 'Alex Doe', amount: 200, status: 'Approved', upiId: 'alex@okbank', date: '2024-05-22T11:00:00Z' },
     { id: 'wd2', userId: '2', userName: 'Jane Smith', amount: 1500, status: 'Pending', upiId: 'jane.s@ybl', date: '2024-05-23T09:45:00Z' },
 ];

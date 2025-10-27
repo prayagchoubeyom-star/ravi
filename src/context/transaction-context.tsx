@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useAuth } from './auth-context';
-import { adminDeposits, adminWithdrawals } from '@/lib/data';
+import { adminDepositsData, adminWithdrawalsData } from '@/lib/data';
 
 type TransactionStatus = 'Pending' | 'Approved' | 'Rejected';
 
@@ -13,7 +13,7 @@ export interface Deposit {
   userName: string;
   amount: number;
   status: TransactionStatus;
-  date: string;
+  date: Date;
 }
 
 export interface Withdrawal {
@@ -23,7 +23,7 @@ export interface Withdrawal {
   amount: number;
   status: TransactionStatus;
   upiId: string;
-  date: string;
+  date: Date;
 }
 
 interface TransactionContextType {
@@ -39,24 +39,18 @@ interface TransactionContextType {
 
 const TransactionContext = createContext<TransactionContextType | undefined>(undefined);
 
+const parseDateSafe = (item: { date: string | Date }) => ({
+  ...item,
+  date: new Date(item.date),
+});
+
+
 export function TransactionProvider({ children }: { children: ReactNode }) {
   const { updateUserBalance } = useAuth();
 
-  const [deposits, setDeposits] = useState<Deposit[]>(() => {
-     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('deposits');
-      return stored ? JSON.parse(stored) : adminDeposits;
-    }
-    return adminDeposits;
-  });
+  const [deposits, setDeposits] = useState<Deposit[]>([]);
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
 
-  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('withdrawals');
-      return stored ? JSON.parse(stored) : adminWithdrawals;
-    }
-    return adminWithdrawals;
-  });
 
   const [upiId, setUpiId] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
@@ -66,11 +60,34 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    localStorage.setItem('deposits', JSON.stringify(deposits));
+    // Initialize state on client-side only to avoid hydration mismatch
+    const storedDeposits = localStorage.getItem('deposits');
+    setDeposits(
+      storedDeposits
+        ? (JSON.parse(storedDeposits) as (Omit<Deposit, 'date'> & { date: string })[]).map(parseDateSafe)
+        : adminDepositsData.map(parseDateSafe)
+    );
+
+    const storedWithdrawals = localStorage.getItem('withdrawals');
+    setWithdrawals(
+      storedWithdrawals
+        ? (JSON.parse(storedWithdrawals) as (Omit<Withdrawal, 'date'> & { date: string })[]).map(parseDateSafe)
+        : adminWithdrawalsData.map(parseDateSafe)
+    );
+  }, []);
+
+
+  useEffect(() => {
+    // Don't save on initial render before client-side state is set
+    if (deposits.length > 0) {
+        localStorage.setItem('deposits', JSON.stringify(deposits));
+    }
   }, [deposits]);
 
   useEffect(() => {
-    localStorage.setItem('withdrawals', JSON.stringify(withdrawals));
+    if (withdrawals.length > 0) {
+        localStorage.setItem('withdrawals', JSON.stringify(withdrawals));
+    }
   }, [withdrawals]);
 
   useEffect(() => {
@@ -86,7 +103,7 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
       ...depositData,
       id: `dep-${Date.now()}`,
       status: 'Pending',
-      date: new Date().toISOString(),
+      date: new Date(),
     };
     setDeposits(prev => [newDeposit, ...prev]);
   };
@@ -96,7 +113,7 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
       ...withdrawalData,
       id: `wd-${Date.now()}`,
       status: 'Pending',
-      date: new Date().toISOString(),
+      date: new Date(),
     };
     setWithdrawals(prev => [newWithdrawal, ...prev]);
   };
