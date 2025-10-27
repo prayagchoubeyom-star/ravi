@@ -18,7 +18,7 @@ import { useCryptoData } from '@/hooks/use-crypto-data';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
 import { useTrading } from '@/context/trading-context';
-import { PlusCircle, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import { PlusCircle, ArrowDownToLine, ArrowUpFromLine, History } from 'lucide-react';
 import type { Crypto } from '@/lib/data';
 import {
   Card,
@@ -30,7 +30,7 @@ import { useAuth } from '@/context/auth-context';
 
 export function WatchlistView() {
   const { allCryptos, loading } = useCryptoData();
-  const { watchlist, addToWatchlist, removeFromWatchlist } = useTrading();
+  const { watchlist, addToWatchlist, removeFromWatchlist, balance } = useTrading();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCrypto, setSelectedCrypto] = useState<Crypto | null>(null);
   const { user } = useAuth();
@@ -94,17 +94,24 @@ export function WatchlistView() {
       <div className="p-4 space-y-4">
         <div className="space-y-2">
             <h2 className="text-2xl font-bold">Welcome, {user?.name.split(' ')[0]}!</h2>
-            <div className="grid grid-cols-2 gap-2">
-                <Button asChild variant="outline">
+            <div className="text-muted-foreground">Available Balance: <span className="font-bold text-lg text-foreground">${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+            <div className="grid grid-cols-3 gap-2">
+                <Button asChild variant="outline" size="sm">
                     <Link href="/deposit">
                         <ArrowDownToLine className="w-4 h-4 mr-2"/>
                         Deposit
                     </Link>
                 </Button>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" size="sm">
                     <Link href="/withdraw">
                         <ArrowUpFromLine className="w-4 h-4 mr-2"/>
                         Withdraw
+                    </Link>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                    <Link href="/history">
+                        <History className="w-4 h-4 mr-2"/>
+                        History
                     </Link>
                 </Button>
             </div>
