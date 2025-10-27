@@ -112,7 +112,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                                         <FormControl>
                                             <RadioGroupItem value="buy" id="buy" className="peer sr-only" />
                                         </FormControl>
-                                        <Label htmlFor="buy" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-blue-600 peer-data-[state=checked]:bg-blue-600/10 peer-data-[state=checked]:text-blue-600">
+                                        <Label htmlFor="buy" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-[hsl(142,76%,42%)] peer-data-[state=checked]:bg-[hsl(142,76%,42%)]/10 peer-data-[state=checked]:text-[hsl(142,76%,42%)]">
                                             BUY
                                         </Label>
                                     </FormItem>
@@ -121,7 +121,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                                             <RadioGroupItem value="sell" id="sell" className="peer sr-only" disabled={!currentPosition} />
                                         </FormControl>
                                         <Label htmlFor="sell" className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold",
-                                            !currentPosition ? "cursor-not-allowed opacity-50" : "hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-red-600 peer-data-[state=checked]:bg-red-600/10 peer-data-[state=checked]:text-red-600"
+                                            !currentPosition ? "cursor-not-allowed opacity-50" : "hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-[hsl(0,84%,60%)] peer-data-[state=checked]:bg-[hsl(0,84%,60%)]/10 peer-data-[state=checked]:text-[hsl(0,84%,60%)]"
                                         )}>
                                             SELL
                                         </Label>
@@ -217,7 +217,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                         )}
                         <span>Approx. cost: <span className="text-foreground font-medium">${margin.toFixed(2)}</span></span>
                     </div>
-                    <Button type="submit" size="lg" className={cn("w-full text-lg", orderSide === 'buy' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700', orderSide === 'sell' && !currentPosition && "opacity-50 cursor-not-allowed")} disabled={orderSide === 'sell' && !currentPosition}>
+                    <Button type="submit" size="lg" className={cn("w-full text-lg", orderSide === 'buy' ? 'bg-[hsl(142,76%,42%)] hover:bg-[hsl(142,76%,38%)]' : 'bg-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,55%)]', orderSide === 'sell' && !currentPosition && "opacity-50 cursor-not-allowed")} disabled={orderSide === 'sell' && !currentPosition}>
                         {orderSide.toUpperCase()}
                     </Button>
                 </div>
@@ -226,3 +226,5 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
     </div>
   );
 }
+
+    
