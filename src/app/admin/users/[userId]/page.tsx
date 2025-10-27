@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { initialOrders } from "@/lib/data";
+import { initialOrders, adminUsers } from "@/lib/data";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -23,6 +23,16 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProtectedRoute } from "@/components/protected-route";
 import { useAuth } from "@/context/auth-context";
+
+// This function generates the static paths for each user at build time.
+export async function generateStaticParams() {
+  // We need to provide a list of all possible userIds so Next.js can pre-render them.
+  // In a real app, you might fetch this from a database.
+  // We will use the initial list of users for this.
+  return adminUsers.map((user) => ({
+    userId: user.id,
+  }));
+}
 
 
 export default function UserDetailsPage({ params: { userId } }: { params: { userId: string } }) {
