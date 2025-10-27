@@ -159,66 +159,68 @@ export function AdminView() {
               </Dialog>
           </CardHeader>
           <CardContent className="p-0">
-              <div className="rounded-lg border-t">
-                  <Table>
-                      <TableHeader>
-                      <TableRow>
-                          <TableHead className="px-4">User</TableHead>
-                          <TableHead className="px-4">Email</TableHead>
-                          <TableHead className="text-right px-4">Actions</TableHead>
-                      </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                      {users.filter(u => u.email !== 'wellfiree').map((user) => (
-                          <TableRow key={user.id}>
-                          <TableCell className="font-medium px-4 whitespace-nowrap">{user.name}</TableCell>
-                          <TableCell className="px-4 whitespace-nowrap">{user.email}</TableCell>
-                          <TableCell className="text-right px-4">
-                              <div className="flex flex-wrap items-center justify-end gap-1">
-                                  <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
-                                      <Eye className="h-4 w-4" />
-                                  </Button>
-                                  <Dialog>
-                                      <DialogTrigger asChild>
-                                          <Button variant="outline" size="icon" className="h-8 w-8">
-                                              <Edit className="h-4 w-4" />
-                                          </Button>
-                                      </DialogTrigger>
-                                      <DialogContent>
-                                          <DialogHeader>
-                                              <DialogTitle>Edit Funds for {user.name}</DialogTitle>
-                                              <DialogDescription>Set the new wallet balance for this user.</DialogDescription>
-                                          </DialogHeader>
-                                          <div className="grid gap-4 py-4">
-                                              <div className="grid grid-cols-4 items-center gap-4">
-                                              <Label htmlFor="funds" className="text-right">
-                                                  Balance
-                                              </Label>
-                                              <Input
-                                                  id="funds"
-                                                  type="number"
-                                                  defaultValue={user.balance}
-                                                  onChange={(e) => setEditFundsAmount(Number(e.target.value))}
-                                                  className="col-span-3"
-                                              />
-                                              </div>
-                                          </div>
-                                          <DialogFooter>
-                                              <DialogClose asChild>
-                                                  <Button onClick={() => handleEditFunds(user.id, user.name)}>Save changes</Button>
-                                              </DialogClose>
-                                          </DialogFooter>
-                                      </DialogContent>
-                                  </Dialog>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteUser(user.id)}>
-                                      <Trash2 className="h-4 w-4 text-red-500" />
-                                  </Button>
-                              </div>
-                          </TableCell>
-                          </TableRow>
-                      ))}
-                      </TableBody>
-                  </Table>
+              <div className="overflow-x-auto">
+                <div className="rounded-lg border-t">
+                    <Table>
+                        <TableHeader>
+                        <TableRow>
+                            <TableHead className="px-4">User</TableHead>
+                            <TableHead className="px-4">Email</TableHead>
+                            <TableHead className="text-right px-4">Actions</TableHead>
+                        </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                        {users.filter(u => u.email !== 'wellfiree').map((user) => (
+                            <TableRow key={user.id}>
+                            <TableCell className="font-medium px-4 whitespace-nowrap">{user.name}</TableCell>
+                            <TableCell className="px-4 whitespace-nowrap">{user.email}</TableCell>
+                            <TableCell className="text-right px-4">
+                                <div className="flex flex-wrap items-center justify-end gap-1">
+                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
+                                        <Eye className="h-4 w-4" />
+                                    </Button>
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" size="icon" className="h-8 w-8">
+                                                <Edit className="h-4 w-4" />
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Edit Funds for {user.name}</DialogTitle>
+                                                <DialogDescription>Set the new wallet balance for this user.</DialogDescription>
+                                            </DialogHeader>
+                                            <div className="grid gap-4 py-4">
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="funds" className="text-right">
+                                                    Balance
+                                                </Label>
+                                                <Input
+                                                    id="funds"
+                                                    type="number"
+                                                    defaultValue={user.balance}
+                                                    onChange={(e) => setEditFundsAmount(Number(e.target.value))}
+                                                    className="col-span-3"
+                                                />
+                                                </div>
+                                            </div>
+                                            <DialogFooter>
+                                                <DialogClose asChild>
+                                                    <Button onClick={() => handleEditFunds(user.id, user.name)}>Save changes</Button>
+                                                </DialogClose>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteUser(user.id)}>
+                                        <Trash2 className="h-4 w-4 text-red-500" />
+                                    </Button>
+                                </div>
+                            </TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                </div>
               </div>
           </CardContent>
       </Card>
@@ -229,36 +231,38 @@ export function AdminView() {
               <CardDescription>Approve or reject user deposit requests.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-              <div className="rounded-lg border-t">
-                  <Table>
-                      <TableHeader>
-                          <TableRow>
-                              <TableHead>User</TableHead>
-                              <TableHead>Amount</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                          {deposits.map((deposit) => (
-                              <TableRow key={deposit.id}>
-                                  <TableCell className="whitespace-nowrap">{deposit.userName}</TableCell>
-                                  <TableCell>${deposit.amount.toLocaleString()}</TableCell>
-                                  <TableCell>
-                                      <Badge variant={deposit.status === 'Approved' ? 'default' : deposit.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{deposit.status}</Badge>
-                                  </TableCell>
-                                  <TableCell className="text-right space-x-1">
-                                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'} onClick={() => handleDepositAction(deposit, 'Approved')}>
-                                          <CheckCircle className="h-4 w-4 text-green-500" />
-                                      </Button>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'} onClick={() => handleDepositAction(deposit, 'Rejected')}>
-                                          <XCircle className="h-4 w-4 text-red-500" />
-                                      </Button>
-                                  </TableCell>
-                              </TableRow>
-                          ))}
-                      </TableBody>
-                  </Table>
+              <div className="overflow-x-auto">
+                <div className="rounded-lg border-t">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>User</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {deposits.map((deposit) => (
+                                <TableRow key={deposit.id}>
+                                    <TableCell className="whitespace-nowrap">{deposit.userName}</TableCell>
+                                    <TableCell>${deposit.amount.toLocaleString()}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={deposit.status === 'Approved' ? 'default' : deposit.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{deposit.status}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right space-x-1">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'} onClick={() => handleDepositAction(deposit, 'Approved')}>
+                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'} onClick={() => handleDepositAction(deposit, 'Rejected')}>
+                                            <XCircle className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
               </div>
           </CardContent>
       </Card>
@@ -269,40 +273,42 @@ export function AdminView() {
               <CardDescription>Approve or reject user withdrawal requests.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-              <div className="rounded-lg border-t">
-                  <Table>
-                      <TableHeader>
-                          <TableRow>
-                              <TableHead>User</TableHead>
-                              <TableHead>Amount</TableHead>
-                              <TableHead>UPI ID</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                          {withdrawals.map((withdrawal) => (
-                              <TableRow key={withdrawal.id}>
-                                  <TableCell className="whitespace-nowrap">{withdrawal.userName}</TableCell>
-                                  <TableCell>${withdrawal.amount.toLocaleString()}</TableCell>
-                                  <TableCell className="text-xs whitespace-nowrap">
-                                      <p>{withdrawal.upiId}</p>
-                                  </TableCell>
-                                  <TableCell>
-                                      <Badge variant={withdrawal.status === 'Approved' ? 'default' : withdrawal.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{withdrawal.status}</Badge>
-                                  </TableCell>
-                                  <TableCell className="text-right space-x-1">
-                                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'} onClick={() => handleWithdrawalAction(withdrawal, 'Approved')}>
-                                          <CheckCircle className="h-4 w-4 text-green-500" />
-                                      </Button>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'} onClick={() => handleWithdrawalAction(withdrawal, 'Rejected')}>
-                                          <XCircle className="h-4 w-4 text-red-500" />
-                                      </Button>
-                                  </TableCell>
-                              </TableRow>
-                          ))}
-                      </TableBody>
-                  </Table>
+              <div className="overflow-x-auto">
+                <div className="rounded-lg border-t">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>User</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>UPI ID</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {withdrawals.map((withdrawal) => (
+                                <TableRow key={withdrawal.id}>
+                                    <TableCell className="whitespace-nowrap">{withdrawal.userName}</TableCell>
+                                    <TableCell>${withdrawal.amount.toLocaleString()}</TableCell>
+                                    <TableCell className="text-xs whitespace-nowrap">
+                                        <p>{withdrawal.upiId}</p>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant={withdrawal.status === 'Approved' ? 'default' : withdrawal.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{withdrawal.status}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right space-x-1">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'} onClick={() => handleWithdrawalAction(withdrawal, 'Approved')}>
+                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'} onClick={() => handleWithdrawalAction(withdrawal, 'Rejected')}>
+                                            <XCircle className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
               </div>
           </CardContent>
       </Card>
@@ -325,4 +331,5 @@ export function AdminView() {
       </Card>
     </div>
   );
-}
+
+    
