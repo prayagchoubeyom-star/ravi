@@ -12,14 +12,13 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from './ui/button';
-import { Trash2, CheckCircle, XCircle, UserPlus, Eye, Edit } from 'lucide-react';
+import { Trash2, CheckCircle, XCircle, UserPlus, Eye, Edit, Copy } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useAdmin } from '@/context/admin-context';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -35,22 +34,9 @@ import { useAuth } from '@/context/auth-context';
 import { useTransactions } from '@/context/transaction-context';
 import type { Deposit, Withdrawal } from '@/context/transaction-context';
 
-const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg aria-hidden="true" viewBox="0 0 128 128" {...props}>
-      <path
-        fill="currentColor"
-        d="M36 36h20V16H36zm40 0h32V16H76zM16 36h20V16H16zm20 20H16v20h20zm0 20H16v36h20zm0-40H16v20h20zM56 56H36v20h20zm-20 0H16v20h20zm60-20h32v20H96zm-20 0h20V16H76zM56 16v20H36V16zM36 56v20H16V56zm40 0h20V36H76zm20 0h20V36H96zm-20 20H76v20h20zm0 0v20H56v-20zm0 0H76v20h20zM56 76v20H36V76zm40 20H76v36h20zm-20 0H56v20h20zm-20 0H36v20h20zm40-20H76v20h20zm20 20h20V76H96zM76 76v20H56V76zm40-20v20H96V56zm-20 0v20H76V56zm20 0h20V36H96zM36 76H16v20h20zm40-20H56v20h20zM36 96v20H16V96z"
-      />
-      <path
-        fill="currentColor"
-        d="M16 16H0v40h40V16H16zm20 20H4V20h32zM76 16H56v20h20zM16 76H0v40h40V76H16zm20 20H4V80h32zM96 96H76v20h20zm-20-20H56v20h20zm-20 0H36v20h20zm-20 0H16v20h20zm40 20H56v20h20zM112 16h-4v4h-4v4h-4v4h-4v4h-4v4h4v-4h4v-4h4v-4h4v-4h4zm-20 0h-4v4h-4v4h4v-4h4zM16 56H0v20h20V56H0v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm20 20H16v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm20-20H36v20h20v-4h-4v-4h-4v-4h-4v-4h-4zM16 112H0v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm20-20H16v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm76-40h20v40h-4v-4h-4v-4h-4v-4h-4v-4h-4zm-20 4h-4v4h4zM56 116h4v4h4v4h-4v-4h-4zM116 16h-4v4h-4v4h4v-4h4zm-40-4v-4h4v-4h-4v-4h-4v4h4v4z"
-      />
-    </svg>
-  );
-
 
 export function AdminView() {
-  const { qrCodeUrl, setQrCodeUrl, addFunds } = useAdmin();
+  const { upiId, setUpiId, addFunds } = useAdmin();
   const { users, addUser, deleteUser } = useAuth();
   const { deposits, withdrawals, updateDepositStatus, updateWithdrawalStatus } = useTransactions();
   const { toast } = useToast();
@@ -59,20 +45,14 @@ export function AdminView() {
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
   const [editFundsAmount, setEditFundsAmount] = useState(0);
+  const [newUpiId, setNewUpiId] = useState(upiId || '');
 
-  const handleQrCodeUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setQrCodeUrl(reader.result as string);
-        toast({
-            title: "QR Code Updated",
-            description: "The new QR code has been uploaded and will be shown to users.",
-        })
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleUpiIdUpdate = () => {
+    setUpiId(newUpiId);
+    toast({
+        title: "UPI ID Updated",
+        description: "The new UPI ID will be shown to users for deposits.",
+    })
   };
 
   const handleCreateUser = () => {
@@ -306,7 +286,7 @@ export function AdminView() {
                                 <TableRow>
                                     <TableHead>User</TableHead>
                                     <TableHead>Amount</TableHead>
-                                    <TableHead className="hidden sm:table-cell">Bank</TableHead>
+                                    <TableHead className="hidden sm:table-cell">UPI ID</TableHead>
                                     <TableHead className="hidden md:table-cell">Status</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
@@ -317,8 +297,7 @@ export function AdminView() {
                                         <TableCell>{withdrawal.userName}</TableCell>
                                         <TableCell>${withdrawal.amount.toLocaleString()}</TableCell>
                                         <TableCell className="text-xs hidden sm:table-cell">
-                                            <p>{withdrawal.bankName}</p>
-                                            <p className="text-muted-foreground">{withdrawal.accountNumber}</p>
+                                            <p>{withdrawal.upiId}</p>
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell">
                                             <Badge variant={withdrawal.status === 'Approved' ? 'default' : withdrawal.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{withdrawal.status}</Badge>
@@ -343,21 +322,17 @@ export function AdminView() {
             <Card>
                 <CardHeader>
                     <CardTitle>Deposit Settings</CardTitle>
-                    <CardDescription>Manage the QR code for user deposits.</CardDescription>
+                    <CardDescription>Manage the UPI ID for user deposits.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div>
-                        <h3 className="font-medium mb-2">Current QR Code</h3>
-                        <div className="p-4 bg-white rounded-lg inline-block">
-                             {qrCodeUrl ? <Image src={qrCodeUrl} alt="Deposit QR Code" width={192} height={192} className="h-48 w-48" /> : <QrCodeIcon className="h-48 w-48 text-black" />}
-                        </div>
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="qr-upload">Upload New QR Code</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="upi-id">Company UPI ID</Label>
                         <div className="flex items-center gap-2">
-                            <Input id="qr-upload" type="file" accept="image/*" className="max-w-sm" onChange={handleQrCodeUpload} />
+                            <Input id="upi-id" value={newUpiId} onChange={(e) => setNewUpiId(e.target.value)} placeholder="yourcompany@upi" className="max-w-sm" />
+                            <Button onClick={handleUpiIdUpdate}>Save</Button>
                         </div>
-                     </div>
+                        {upiId && <p className="text-sm text-muted-foreground">Current UPI ID: {upiId}</p>}
+                    </div>
                 </CardContent>
             </Card>
         </TabsContent>

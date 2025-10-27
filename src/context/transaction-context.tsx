@@ -22,16 +22,15 @@ export interface Withdrawal {
   userName: string;
   amount: number;
   status: TransactionStatus;
-  bankName: string;
-  accountNumber: string;
+  upiId: string;
   date: string;
 }
 
 interface TransactionContextType {
   deposits: Deposit[];
   withdrawals: Withdrawal[];
-  qrCodeUrl: string | null;
-  setQrCodeUrl: (url: string) => void;
+  upiId: string | null;
+  setUpiId: (url: string) => void;
   addDeposit: (depositData: Omit<Deposit, 'id' | 'status' | 'date'>) => void;
   addWithdrawal: (withdrawalData: Omit<Withdrawal, 'id' | 'status' | 'date'>) => void;
   updateDepositStatus: (depositId: string, status: TransactionStatus) => void;
@@ -59,9 +58,9 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
     return adminWithdrawals;
   });
 
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(() => {
+  const [upiId, setUpiId] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('qrCodeUrl');
+      return localStorage.getItem('upiId');
     }
     return null;
   });
@@ -75,12 +74,12 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
   }, [withdrawals]);
 
   useEffect(() => {
-    if (qrCodeUrl) {
-      localStorage.setItem('qrCodeUrl', qrCodeUrl);
+    if (upiId) {
+      localStorage.setItem('upiId', upiId);
     } else {
-      localStorage.removeItem('qrCodeUrl');
+      localStorage.removeItem('upiId');
     }
-  }, [qrCodeUrl]);
+  }, [upiId]);
 
   const addDeposit = (depositData: Omit<Deposit, 'id' | 'status' | 'date'>) => {
     const newDeposit: Deposit = {
@@ -117,7 +116,7 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
     
     if (depositToUpdate && status === 'Approved') {
         const { userId, amount } = depositToUpdate;
-        const user = updateUserBalance(userId, prevBalance => prevBalance + amount);
+        updateUserBalance(userId, prevBalance => prevBalance + amount);
     }
   };
 
@@ -145,8 +144,8 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
       value={{
         deposits,
         withdrawals,
-        qrCodeUrl,
-        setQrCodeUrl,
+        upiId,
+        setUpiId,
         addDeposit,
         addWithdrawal,
         updateDepositStatus,

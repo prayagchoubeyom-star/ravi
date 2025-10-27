@@ -6,15 +6,15 @@ import { useAuth } from './auth-context';
 import { useTransactions } from './transaction-context';
 
 interface AdminContextType {
-  qrCodeUrl: string | null;
-  setQrCodeUrl: (url: string) => void;
+  upiId: string | null;
+  setUpiId: (id: string) => void;
   addFunds: (amount: number, userId: string) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  const { qrCodeUrl, setQrCodeUrl } = useTransactions();
+  const { upiId, setUpiId } = useTransactions();
   const { updateUserBalance } = useAuth();
 
   const addFunds = (amount: number, userId: string) => {
@@ -22,7 +22,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AdminContext.Provider value={{ qrCodeUrl, setQrCodeUrl, addFunds }}>
+    <AdminContext.Provider value={{ upiId, setUpiId, addFunds }}>
       {children}
     </AdminContext.Provider>
   );

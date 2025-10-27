@@ -21,9 +21,7 @@ import { useTransactions } from '@/context/transaction-context';
 import { useAuth } from '@/context/auth-context';
 
 const withdrawalSchema = z.object({
-  bankName: z.string().min(1, 'Bank name is required'),
-  accountNumber: z.string().min(1, 'Account number is required'),
-  ifscCode: z.string().min(1, 'IFSC code is required'),
+  upiId: z.string().min(3, 'A valid UPI ID is required'),
   amount: z.coerce.number().positive('Amount must be positive'),
 });
 
@@ -37,9 +35,7 @@ export function WithdrawView() {
   const form = useForm<z.infer<typeof withdrawalSchema>>({
     resolver: zodResolver(withdrawalSchema),
     defaultValues: {
-      bankName: '',
-      accountNumber: '',
-      ifscCode: '',
+      upiId: '',
       amount: 0,
     },
   });
@@ -59,8 +55,7 @@ export function WithdrawView() {
         userId: user.id,
         userName: user.name,
         amount: values.amount,
-        bankName: values.bankName,
-        accountNumber: values.accountNumber
+        upiId: values.upiId,
     });
 
 
@@ -87,45 +82,19 @@ export function WithdrawView() {
         <Card>
             <CardHeader>
                 <CardTitle>Withdraw Funds</CardTitle>
-                <CardDescription>Enter your bank details and the amount to withdraw.</CardDescription>
+                <CardDescription>Enter your UPI ID and the amount to withdraw.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="bankName"
+                            name="upiId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Bank Name</FormLabel>
+                                    <FormLabel>Your UPI ID</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="e.g., Global Bank" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                         <FormField
-                            control={form.control}
-                            name="accountNumber"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Account Number</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter your account number" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                         <FormField
-                            control={form.control}
-                            name="ifscCode"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>IFSC Code</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter bank's IFSC code" {...field} />
+                                        <Input placeholder="yourname@upi" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

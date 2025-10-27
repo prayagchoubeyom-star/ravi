@@ -99,6 +99,6 @@ export const adminDeposits: Deposit[] = [
 ];
 
 export const adminWithdrawals: Withdrawal[] = [
-    { id: 'wd1', userId: '1', userName: 'Alex Doe', amount: 200, status: 'Approved', bankName: 'Global Bank', accountNumber: '...1234', date: '2024-05-22T11:00:00Z' },
-    { id: 'wd2', userId: '2', userName: 'Jane Smith', amount: 1500, status: 'Pending', bankName: 'National Bank', accountNumber: '...5678', date: '2024-05-23T09:45:00Z' },
+    { id: 'wd1', userId: '1', userName: 'Alex Doe', amount: 200, status: 'Approved', upiId: 'alex@okbank', date: '2024-05-22T11:00:00Z' },
+    { id: 'wd2', userId: '2', userName: 'Jane Smith', amount: 1500, status: 'Pending', upiId: 'jane.s@ybl', date: '2024-05-23T09:45:00Z' },
 ];

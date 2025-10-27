@@ -8,28 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { useTransactions } from '@/context/transaction-context';
 import { useAuth } from '@/context/auth-context';
-
-const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg aria-hidden="true" viewBox="0 0 128 128" {...props}>
-      <path
-        fill="currentColor"
-        d="M36 36h20V16H36zm40 0h32V16H76zM16 36h20V16H16zm20 20H16v20h20zm0 20H16v36h20zm0-40H16v20h20zM56 56H36v20h20zm-20 0H16v20h20zm60-20h32v20H96zm-20 0h20V16H76zM56 16v20H36V16zM36 56v20H16V56zm40 0h20V36H76zm20 0h20V36H96zm-20 20H76v20h20zm0 0v20H56v-20zm0 0H76v20h20zM56 76v20H36V76zm40 20H76v36h20zm-20 0H56v20h20zm-20 0H36v20h20zm40-20H76v20h20zm20 20h20V76H96zM76 76v20H56V76zm40-20v20H96V56zm-20 0v20H76V56zm20 0h20V36H96zM36 76H16v20h20zm40-20H56v20h20zM36 96v20H16V96z"
-      />
-      <path
-        fill="currentColor"
-        d="M16 16H0v40h40V16H16zm20 20H4V20h32zM76 16H56v20h20zM16 76H0v40h40V76H16zm20 20H4V80h32zM96 96H76v20h20zm-20-20H56v20h20zm-20 0H36v20h20zm-20 0H16v20h20zm40 20H56v20h20zM112 16h-4v4h-4v4h-4v4h-4v4h-4v4h4v-4h4v-4h4v-4h4v-4h4zm-20 0h-4v4h-4v4h4v-4h4zM16 56H0v20h20V56H0v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm20 20H16v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm20-20H36v20h20v-4h-4v-4h-4v-4h-4v-4h-4zM16 112H0v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm20-20H16v20h20v-4h-4v-4h-4v-4h-4v-4h-4zm76-40h20v40h-4v-4h-4v-4h-4v-4h-4v-4h-4zm-20 4h-4v4h4zM56 116h4v4h4v4h-4v-4h-4zM116 16h-4v4h-4v4h4v-4h4zm-40-4v-4h4v-4h-4v-4h-4v4h4v4z"
-      />
-    </svg>
-  );
+import { Copy } from 'lucide-react';
 
 export function DepositView() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const router = useRouter();
-  const { addDeposit, qrCodeUrl } = useTransactions();
+  const { addDeposit, upiId } = useTransactions();
   const { user } = useAuth();
   const [amount, setAmount] = useState(0);
 
@@ -38,6 +25,16 @@ export function DepositView() {
       setSelectedFile(event.target.files[0]);
     }
   };
+  
+  const handleCopyUpi = () => {
+    if (upiId) {
+        navigator.clipboard.writeText(upiId);
+        toast({
+            title: "Copied!",
+            description: "UPI ID copied to clipboard."
+        });
+    }
+  }
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -80,11 +77,24 @@ export function DepositView() {
       <Card>
         <CardHeader>
           <CardTitle>Deposit Funds</CardTitle>
-          <CardDescription>Scan the QR code, then submit your deposit amount and payment proof.</CardDescription>
+          <CardDescription>Send funds to the UPI ID below, then submit your deposit amount and payment proof.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6">
-          <div className="p-4 bg-white rounded-lg">
-             {qrCodeUrl ? <Image src={qrCodeUrl} alt="Deposit QR Code" width={192} height={192} className="h-48 w-48" /> : <QrCodeIcon className="h-48 w-48 text-black" />}
+          
+          <div className="w-full space-y-2 text-center">
+            <Label>Pay to this UPI ID</Label>
+            {upiId ? (
+                <div className="flex items-center justify-center gap-2 p-3 bg-muted rounded-lg">
+                    <span className="font-mono text-lg">{upiId}</span>
+                    <Button variant="ghost" size="icon" onClick={handleCopyUpi}>
+                        <Copy className="h-5 w-5" />
+                    </Button>
+                </div>
+            ) : (
+                <div className="p-3 bg-muted rounded-lg">
+                    <p className="text-muted-foreground">Admin has not set a UPI ID yet.</p>
+                </div>
+            )}
           </div>
           
           <form onSubmit={handleSubmit} className="w-full space-y-4">
@@ -97,7 +107,7 @@ export function DepositView() {
               <Input id="picture" type="file" accept="image/*" onChange={handleFileChange} />
               {selectedFile && <p className="text-xs text-muted-foreground mt-1">File: {selectedFile.name}</p>}
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={!upiId}>
               Submit Deposit Request
             </Button>
           </form>
