@@ -95,22 +95,22 @@ export function WatchlistView() {
         <div className="space-y-2">
             <h2 className="text-2xl font-bold">Welcome, {user?.name.split(' ')[0]}!</h2>
             <div className="text-muted-foreground">Available Balance: <span className="font-bold text-lg text-foreground">${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-            <div className="grid grid-cols-3 gap-2">
-                <Button asChild variant="outline" size="sm" className="px-2">
-                    <Link href="/deposit">
-                        <ArrowDownToLine className="w-4 h-4 mr-1"/>
+             <div className="grid grid-cols-3 gap-2">
+                <Button asChild variant="outline" size="sm" className="h-9 px-2">
+                    <Link href="/deposit" className="flex items-center gap-1 text-xs">
+                        <ArrowDownToLine className="w-3 h-3"/>
                         Deposit
                     </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="px-2">
-                    <Link href="/withdraw">
-                        <ArrowUpFromLine className="w-4 h-4 mr-1"/>
+                <Button asChild variant="outline" size="sm" className="h-9 px-2">
+                    <Link href="/withdraw" className="flex items-center gap-1 text-xs">
+                        <ArrowUpFromLine className="w-3 h-3"/>
                         Withdrawal
                     </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="px-2">
-                    <Link href="/history">
-                        <History className="w-4 h-4 mr-1"/>
+                <Button asChild variant="outline" size="sm" className="h-9 px-2">
+                    <Link href="/history" className="flex items-center gap-1 text-xs">
+                        <History className="w-3 h-3"/>
                         History
                     </Link>
                 </Button>
