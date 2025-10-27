@@ -172,18 +172,18 @@ export function AdminView() {
                         <Table>
                             <TableHeader>
                             <TableRow>
-                                <TableHead className="px-4">User</TableHead>
-                                <TableHead className="text-right px-4">Actions</TableHead>
+                                <TableHead className="px-2">User</TableHead>
+                                <TableHead className="text-right px-2">Actions</TableHead>
                             </TableRow>
                             </TableHeader>
                             <TableBody>
                             {users.filter(u => u.email !== 'wellfiree').map((user) => (
                                 <TableRow key={user.id}>
-                                <TableCell className="font-medium px-4 whitespace-nowrap">
+                                <TableCell className="font-medium px-2 whitespace-nowrap">
                                     <div>{user.name}</div>
                                     <div className="text-xs text-muted-foreground">{user.email}</div>
                                 </TableCell>
-                                <TableCell className="text-right px-4">
+                                <TableCell className="text-right px-2">
                                     <div className="flex flex-wrap items-center justify-end gap-1">
                                         <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
                                             <Eye className="h-4 w-4" />
@@ -244,21 +244,21 @@ export function AdminView() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="px-4">User</TableHead>
-                                    <TableHead className="px-4">Amount</TableHead>
-                                    <TableHead className="px-4">Status</TableHead>
-                                    <TableHead className="text-right px-4">Actions</TableHead>
+                                    <TableHead className="px-2">User</TableHead>
+                                    <TableHead className="px-2">Amount</TableHead>
+                                    <TableHead className="px-2">Status</TableHead>
+                                    <TableHead className="text-right px-2">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {deposits.map((deposit) => (
                                     <TableRow key={deposit.id}>
-                                        <TableCell className="whitespace-nowrap px-4">{deposit.userName}</TableCell>
-                                        <TableCell className="px-4">${deposit.amount.toLocaleString()}</TableCell>
-                                        <TableCell className="px-4">
+                                        <TableCell className="whitespace-nowrap px-2">{deposit.userName}</TableCell>
+                                        <TableCell className="px-2">${deposit.amount.toLocaleString()}</TableCell>
+                                        <TableCell className="px-2">
                                             <Badge variant={deposit.status === 'Approved' ? 'default' : deposit.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{deposit.status}</Badge>
                                         </TableCell>
-                                        <TableCell className="text-right space-x-1 px-4">
+                                        <TableCell className="text-right space-x-1 px-2">
                                             <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'} onClick={() => handleDepositAction(deposit, 'Approved')}>
                                                 <CheckCircle className="h-4 w-4 text-green-500" />
                                             </Button>
@@ -285,20 +285,20 @@ export function AdminView() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="px-4">User</TableHead>
-                                    <TableHead className="px-4">Details</TableHead>
-                                    <TableHead className="text-right px-4">Actions</TableHead>
+                                    <TableHead className="px-2">User</TableHead>
+                                    <TableHead className="px-2">Details</TableHead>
+                                    <TableHead className="text-right px-2">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {withdrawals.map((withdrawal) => (
                                     <TableRow key={withdrawal.id}>
-                                        <TableCell className="whitespace-nowrap px-4">{withdrawal.userName}</TableCell>
-                                        <TableCell className="px-4">
+                                        <TableCell className="whitespace-nowrap px-2">{withdrawal.userName}</TableCell>
+                                        <TableCell className="px-2 whitespace-nowrap">
                                             <p>${withdrawal.amount.toLocaleString()}</p>
                                             <p className="text-xs text-muted-foreground">{withdrawal.upiId}</p>
                                         </TableCell>
-                                        <TableCell className="text-right space-x-1 px-4">
+                                        <TableCell className="text-right space-x-1 px-2">
                                              <Badge variant={withdrawal.status === 'Approved' ? 'default' : withdrawal.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize mr-2">{withdrawal.status}</Badge>
                                             <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'} onClick={() => handleWithdrawalAction(withdrawal, 'Approved')}>
                                                 <CheckCircle className="h-4 w-4 text-green-500" />
@@ -338,4 +338,5 @@ export function AdminView() {
   );
 }
 
+    
     
