@@ -26,7 +26,7 @@ export function OrdersView() {
         return <p className="text-muted-foreground text-center p-8">No orders to display.</p>
     }
     return (
-        <div className="rounded-lg border overflow-x-auto">
+        <div className="rounded-lg border">
         <Table>
             <TableHeader>
             <TableRow>
@@ -73,10 +73,8 @@ export function OrdersView() {
                 <CardTitle>Open Orders</CardTitle>
                 <CardDescription>Your orders that have not been filled yet.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="overflow-x-auto">
-                    {renderOrderTable(openOrders, false)}
-                </div>
+            <CardContent className="overflow-x-auto">
+                {renderOrderTable(openOrders, false)}
             </CardContent>
         </Card>
          <Card>
@@ -84,10 +82,8 @@ export function OrdersView() {
                 <CardTitle>Order History</CardTitle>
                 <CardDescription>Your past filled or cancelled orders.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="overflow-x-auto">
-                    {renderOrderTable(historyOrders, true)}
-                </div>
+            <CardContent className="overflow-x-auto">
+                {renderOrderTable(historyOrders, true)}
             </CardContent>
         </Card>
     </div>
