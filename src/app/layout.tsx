@@ -31,7 +31,7 @@ export default function RootLayout({
             <TradingProvider>
               <AdminProvider>
                 <div className="flex h-dvh w-full items-center justify-center p-0 sm:p-4">
-                  <div className="relative w-full max-w-[420px] h-full sm:h-[95vh] sm:max-h-[900px] overflow-hidden rounded-none sm:rounded-3xl border-y-0 sm:border-8 border-neutral-800 bg-background shadow-2xl">
+                  <div className="relative w-full max-w-sm h-full sm:h-[95vh] sm:max-h-[900px] overflow-hidden rounded-none sm:rounded-3xl border-y-0 sm:border-8 border-neutral-800 bg-background shadow-2xl">
                     <MainLayout>{children}</MainLayout>
                     <Toaster />
                   </div>
