@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { user } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ChevronRight, ArrowDownToLine, ArrowUpFromLine, LogOut } from 'lucide-react';
+import Link from 'next/link';
 
 export function ProfileView() {
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
@@ -27,12 +28,14 @@ export function ProfileView() {
             <CardTitle>Wallet</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-            <Button variant="ghost" className="w-full justify-between">
-                <span className="flex items-center gap-3">
-                    <ArrowDownToLine className="w-5 h-5 text-muted-foreground" />
-                    <span>Deposit</span>
-                </span>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            <Button asChild variant="ghost" className="w-full justify-between">
+                <Link href="/deposit">
+                    <span className="flex items-center gap-3">
+                        <ArrowDownToLine className="w-5 h-5 text-muted-foreground" />
+                        <span>Deposit</span>
+                    </span>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </Link>
             </Button>
             <Button variant="ghost" className="w-full justify-between">
                 <span className="flex items-center gap-3">
