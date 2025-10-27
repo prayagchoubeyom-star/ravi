@@ -159,7 +159,7 @@ export function AdminView() {
               </Dialog>
           </CardHeader>
           <CardContent className="p-0">
-              <div className="rounded-lg border-t overflow-x-auto">
+              <div className="rounded-lg border-t">
                   <Table>
                       <TableHeader>
                       <TableRow>
@@ -229,7 +229,7 @@ export function AdminView() {
               <CardDescription>Approve or reject user deposit requests.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-              <div className="rounded-lg border-t overflow-x-auto">
+              <div className="rounded-lg border-t">
                   <Table>
                       <TableHeader>
                           <TableRow>
@@ -269,7 +269,7 @@ export function AdminView() {
               <CardDescription>Approve or reject user withdrawal requests.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-              <div className="rounded-lg border-t overflow-x-auto">
+              <div className="rounded-lg border-t">
                   <Table>
                       <TableHeader>
                           <TableRow>
@@ -326,5 +326,3 @@ export function AdminView() {
     </div>
   );
 }
-
-    
