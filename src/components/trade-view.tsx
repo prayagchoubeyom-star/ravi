@@ -16,7 +16,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTrading } from '@/context/trading-context';
 import type { Crypto } from '@/lib/data';
-import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { useMemo } from 'react';
@@ -159,14 +158,14 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                         )}
                     />
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <FormField
                             control={form.control}
                             name="quantity"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Quantity</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} className="text-base" /></FormControl>
+                                <FormControl><Input type="number" step="any" {...field} /></FormControl>
                                 </FormItem>
                             )}
                         />
@@ -176,7 +175,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Price</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} disabled={productType === 'market'} placeholder={productType === 'market' ? 'At Market' : ''} className="text-base" /></FormControl>
+                                <FormControl><Input type="number" step="any" {...field} disabled={productType === 'market'} placeholder={productType === 'market' ? 'At Market' : ''} /></FormControl>
                                 </FormItem>
                             )}
                         />
@@ -184,14 +183,14 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                     {form.formState.errors.quantity && <p className="text-sm font-medium text-destructive">{form.formState.errors.quantity.message}</p>}
                     {form.formState.errors.price && <p className="text-sm font-medium text-destructive">{form.formState.errors.price.message}</p>}
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <FormField
                             control={form.control}
                             name="target"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Target (Optional)</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} className="text-base" /></FormControl>
+                                <FormControl><Input type="number" step="any" {...field} /></FormControl>
                                 </FormItem>
                             )}
                         />
@@ -201,7 +200,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Stop-loss (Optional)</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} className="text-base" /></FormControl>
+                                <FormControl><Input type="number" step="any" {...field} /></FormControl>
                                 </FormItem>
                             )}
                         />
@@ -226,5 +225,3 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
     </div>
   );
 }
-
-    
