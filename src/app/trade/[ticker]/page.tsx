@@ -1,3 +1,4 @@
+
 'use client'
 import { TradeView } from "@/components/trade-view";
 import { AppHeader } from "@/components/app-header";

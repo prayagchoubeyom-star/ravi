@@ -1,3 +1,4 @@
+
 import type { BinanceTicker } from "@/lib/binance-types";
 import { cryptos as initialCryptos, tickerToSymbol, type Crypto } from "@/lib/data";
 
