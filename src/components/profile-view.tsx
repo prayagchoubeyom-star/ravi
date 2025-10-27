@@ -1,12 +1,13 @@
 
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-context';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { ChevronRight, LogOut, Newspaper, TrendingUp, HelpCircle, Mail, KeyRound } from 'lucide-react';
+import { ChevronRight, LogOut, Newspaper, TrendingUp, HelpCircle, Mail, KeyRound, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
+import { useTheme } from '@/context/theme-context';
+import { Switch } from './ui/switch';
+import { Label } from './ui/label';
 
 const menuItems = [
     { href: "/news", icon: Newspaper, label: "News" },
@@ -18,6 +19,7 @@ const menuItems = [
 
 export function ProfileView() {
   const { logout, user: authUser } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="p-4 space-y-6">
@@ -31,6 +33,17 @@ export function ProfileView() {
       <Card>
         <CardContent className="p-2">
             <div className="space-y-1">
+                <div className="flex items-center justify-between p-2">
+                    <Label htmlFor="dark-mode" className="flex items-center gap-3">
+                        {theme === 'dark' ? <Moon className="w-5 h-5 text-muted-foreground" /> : <Sun className="w-5 h-5 text-muted-foreground" />}
+                        <span>Dark Mode</span>
+                    </Label>
+                    <Switch
+                        id="dark-mode"
+                        checked={theme === 'dark'}
+                        onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                    />
+                </div>
                 {menuItems.map((item) => (
                      <Button asChild variant="ghost" className="w-full justify-between" key={item.href}>
                         <Link href={item.href}>
