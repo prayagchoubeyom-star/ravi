@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Table,
@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { cn } from '@/lib/utils';
-import { useCryptoData } from '@/hooks/use-crypto-data';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
 import { useTrading } from '@/context/trading-context';
@@ -27,13 +26,36 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetHeader } from './ui/sheet';
 import { TradeView } from './trade-view';
 import { useAuth } from '@/context/auth-context';
+import { fetchAllCryptoData } from '@/services/crypto-service';
 
-export function WatchlistView() {
-  const { allCryptos, loading } = useCryptoData();
+export function WatchlistView({ initialData }: { initialData: Crypto[] }) {
+  const [allCryptos, setAllCryptos] = useState<Crypto[]>(initialData);
+  const [loading, setLoading] = useState(initialData.length === 0);
   const { watchlist, addToWatchlist, removeFromWatchlist, balance } = useTrading();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCrypto, setSelectedCrypto] = useState<Crypto | null>(null);
   const { user } = useAuth();
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const data = await fetchAllCryptoData();
+        setAllCryptos(data);
+      } catch (error) {
+        console.error("Failed to refresh crypto data", error);
+      }
+    }, 5000); // Refresh every 5 seconds
+
+    // Initial load if server-side fetch failed
+    if (initialData.length === 0) {
+      fetchAllCryptoData().then(data => {
+        setAllCryptos(data);
+        setLoading(false);
+      });
+    }
+
+    return () => clearInterval(interval);
+  }, [initialData]);
   
   const watchlistCryptos = allCryptos.filter(c => watchlist.includes(c.ticker));
 

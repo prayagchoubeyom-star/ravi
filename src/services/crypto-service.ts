@@ -20,11 +20,27 @@ const getCryptoName = (ticker: string): string => {
     return ticker;
 }
 
+const getApiUrl = () => {
+  // If running on the server, use the absolute URL.
+  // The 'NEXT_PUBLIC_VERCEL_URL' is an example env var, you might need to adjust it for your hosting.
+  // For Firebase App Hosting, it might be a different variable or might not be needed if same-origin.
+  if (typeof window === 'undefined') {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || process.env.URL || 'http://localhost:9002';
+    return `${baseUrl.startsWith('http') ? '' : 'https://'}${baseUrl}/api/crypto`;
+  }
+  // If on the client, a relative path is fine.
+  return '/api/crypto';
+}
+
 export async function fetchAllCryptoData(): Promise<Crypto[]> {
     try {
-        const response = await fetch('/api/crypto');
+        const response = await fetch(getApiUrl(), {
+          // Revalidate data every 10 seconds
+          next: { revalidate: 10 }
+        });
         if (!response.ok) {
-            throw new Error(`Failed to fetch from API route: ${response.statusText}`);
+            console.error(`Failed to fetch from API route: ${response.statusText}`);
+            return [];
         }
         const data: BinanceTicker[] = await response.json();
 

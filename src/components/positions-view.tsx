@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
-import { useCryptoData } from '@/hooks/use-crypto-data';
 import { useTrading } from '@/context/trading-context';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -23,11 +22,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useEffect, useState } from 'react';
+import type { Crypto } from '@/lib/data';
+import { fetchAllCryptoData } from '@/services/crypto-service';
 
 export function PositionsView() {
-  const { allCryptos, loading } = useCryptoData();
+  const [allCryptos, setAllCryptos] = useState<Crypto[]>([]);
+  const [loading, setLoading] = useState(true);
   const { positions, closePosition } = useTrading();
   const { toast } = useToast();
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await fetchAllCryptoData();
+        setAllCryptos(data);
+      } catch (error) {
+        console.error("Failed to fetch crypto data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   if (loading && positions.length === 0) {
       return <div className="p-4 text-center">Loading portfolio...</div>

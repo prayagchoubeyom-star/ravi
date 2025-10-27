@@ -1,14 +1,32 @@
 'use client'
 import { TradeView } from "@/components/trade-view";
 import { AppHeader } from "@/components/app-header";
-import { useCryptoData } from "@/hooks/use-crypto-data";
-import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { fetchAllCryptoData } from "@/services/crypto-service";
+import type { Crypto } from "@/lib/data";
+import { useRouter } from "next/navigation";
 
 export default function TradePage({ params }: { params: { ticker: string } }) {
-  const { allCryptos, loading } = useCryptoData();
+  const [allCryptos, setAllCryptos] = useState<Crypto[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await fetchAllCryptoData();
+        setAllCryptos(data);
+      } catch (error) {
+        console.error("Failed to fetch crypto data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+  
   const crypto = allCryptos.find(c => c.ticker === params.ticker.toUpperCase());
   
   if (loading) {

@@ -1,10 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -15,14 +15,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useCryptoData } from '@/hooks/use-crypto-data';
 import type { Crypto } from '@/lib/data';
 import { TradingViewWidget } from './tradingview-widget';
 import { tickerToSymbol } from '@/lib/data';
+import { fetchAllCryptoData } from '@/services/crypto-service';
 
-export function ChartsView() {
-  const { allCryptos, loading } = useCryptoData();
-  const [selectedCrypto, setSelectedCrypto] = useState<Crypto | undefined>();
+export function ChartsView({ initialData }: { initialData: Crypto[] }) {
+  const [allCryptos, setAllCryptos] = useState<Crypto[]>(initialData);
+  const [loading, setLoading] = useState(initialData.length === 0);
+  const [selectedCrypto, setSelectedCrypto] = useState<Crypto | undefined>(initialData[0]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const data = await fetchAllCryptoData();
+        setAllCryptos(data);
+        // update selected crypto with fresh data
+        setSelectedCrypto(prevSelected => {
+          if (!prevSelected) return data.length > 0 ? data[0] : undefined;
+          return data.find(c => c.id === prevSelected.id) || prevSelected;
+        });
+      } catch (error) {
+        console.error("Failed to refresh crypto data", error);
+      }
+    }, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (allCryptos.length > 0 && !selectedCrypto) {
@@ -33,7 +52,7 @@ export function ChartsView() {
   const tradingViewSymbol = selectedCrypto ? tickerToSymbol[selectedCrypto.ticker] || `${selectedCrypto.ticker}USDT` : 'BTCUSDT';
 
 
-  if (loading && !selectedCrypto) {
+  if (loading) {
     return <div className="p-4">Loading...</div>;
   }
 

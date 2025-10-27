@@ -1,15 +1,33 @@
 
 'use client';
-import { useCryptoData } from "@/hooks/use-crypto-data";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Skeleton } from "./ui/skeleton";
 import { CryptoIcon } from "./crypto-icon";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { fetchAllCryptoData } from "@/services/crypto-service";
+import type { Crypto } from "@/lib/data";
 
 export function MarketMoversView() {
-    const { allCryptos, loading } = useCryptoData();
+    const [allCryptos, setAllCryptos] = useState<Crypto[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadData() {
+          try {
+            const data = await fetchAllCryptoData();
+            setAllCryptos(data);
+          } catch (error) {
+            console.error("Failed to fetch crypto data", error);
+          } finally {
+            setLoading(false);
+          }
+        }
+        loadData();
+    }, []);
+
 
     const sortedByChange = [...allCryptos].sort((a, b) => b.change24h - a.change24h);
     const topGainers = sortedByChange.slice(0, 10);
@@ -103,5 +121,3 @@ export function MarketMoversView() {
         </div>
     )
 }
-
-    
