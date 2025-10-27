@@ -103,13 +103,15 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
     const handleBuyClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setOrderSide('buy');
-        form.handleSubmit(onSubmit)();
+        // We need to use a timeout to ensure the state updates before validation
+        setTimeout(() => form.handleSubmit(onSubmit)(), 0);
     };
 
     const handleSellClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setOrderSide('sell');
-        form.handleSubmit(onSubmit)();
+        // We need to use a timeout to ensure the state updates before validation
+        setTimeout(() => form.handleSubmit(onSubmit)(), 0);
     };
 
 
@@ -226,7 +228,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                         <Button onClick={handleBuyClick} size="lg" className="w-full text-lg bg-[hsl(142,76%,42%)] hover:bg-[hsl(142,76%,38%)] text-white">
                             Buy
                         </Button>
-                         <Button onClick={handleSellClick} size="lg" className={cn("w-full text-lg bg-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,55%)] text-white", !currentPosition && "opacity-50 cursor-not-allowed hover:bg-[hsl(0,84%,60%)]")} disabled={!currentPosition}>
+                         <Button onClick={handleSellClick} size="lg" className={cn("w-full text-lg bg-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,55%)] text-white")} disabled={!currentPosition}>
                             Sell
                         </Button>
                     </div>
