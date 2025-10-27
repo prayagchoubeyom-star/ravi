@@ -107,7 +107,7 @@ export function AdminView() {
   return (
     <div className="p-4">
       <Tabs defaultValue="users">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="deposits">Deposits</TabsTrigger>
           <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
@@ -122,7 +122,7 @@ export function AdminView() {
                     </div>
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button><UserPlus className="h-4 w-4 mr-2" /> Create User</Button>
+                            <Button><UserPlus className="h-4 w-4 mr-2" /> Create</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
@@ -157,7 +157,7 @@ export function AdminView() {
                             <TableHeader>
                             <TableRow>
                                 <TableHead>User</TableHead>
-                                <TableHead>Email</TableHead>
+                                <TableHead className="hidden sm:table-cell">Email</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                             </TableHeader>
@@ -165,14 +165,14 @@ export function AdminView() {
                             {adminUsers.map((user) => (
                                 <TableRow key={user.id}>
                                 <TableCell className="font-medium">{user.name}</TableCell>
-                                <TableCell>{user.email}</TableCell>
+                                <TableCell className="hidden sm:table-cell">{user.email}</TableCell>
                                 <TableCell className="text-right space-x-1">
-                                    <Button variant="outline" size="sm" onClick={() => router.push(`/admin/users/${user.id}`)}>
+                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
                                         <Eye className="h-4 w-4" />
                                     </Button>
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button variant="outline" size="sm">
+                                            <Button variant="outline" size="icon" className="h-8 w-8">
                                                 <Edit className="h-4 w-4" />
                                             </Button>
                                         </DialogTrigger>
@@ -202,7 +202,7 @@ export function AdminView() {
                                             </DialogFooter>
                                         </DialogContent>
                                     </Dialog>
-                                    <Button variant="ghost" size="icon">
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
                                         <Trash2 className="h-4 w-4 text-red-500" />
                                     </Button>
                                 </TableCell>
@@ -227,7 +227,7 @@ export function AdminView() {
                                 <TableRow>
                                     <TableHead>User</TableHead>
                                     <TableHead>Amount</TableHead>
-                                    <TableHead>Status</TableHead>
+                                    <TableHead className="hidden sm:table-cell">Status</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -236,14 +236,14 @@ export function AdminView() {
                                     <TableRow key={deposit.id}>
                                         <TableCell>{deposit.userName}</TableCell>
                                         <TableCell>${deposit.amount.toLocaleString()}</TableCell>
-                                        <TableCell>
+                                        <TableCell className="hidden sm:table-cell">
                                             <Badge variant={deposit.status === 'Approved' ? 'default' : deposit.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{deposit.status}</Badge>
                                         </TableCell>
                                         <TableCell className="text-right space-x-1">
-                                            <Button variant="ghost" size="icon" disabled={deposit.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'}>
                                                 <CheckCircle className="h-4 w-4 text-green-500" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" disabled={deposit.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'}>
                                                 <XCircle className="h-4 w-4 text-red-500" />
                                             </Button>
                                         </TableCell>
@@ -268,8 +268,8 @@ export function AdminView() {
                                 <TableRow>
                                     <TableHead>User</TableHead>
                                     <TableHead>Amount</TableHead>
-                                    <TableHead>Bank</TableHead>
-                                    <TableHead>Status</TableHead>
+                                    <TableHead className="hidden sm:table-cell">Bank</TableHead>
+                                    <TableHead className="hidden md:table-cell">Status</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -278,18 +278,18 @@ export function AdminView() {
                                     <TableRow key={withdrawal.id}>
                                         <TableCell>{withdrawal.userName}</TableCell>
                                         <TableCell>${withdrawal.amount.toLocaleString()}</TableCell>
-                                        <TableCell className="text-xs">
+                                        <TableCell className="text-xs hidden sm:table-cell">
                                             <p>{withdrawal.bankName}</p>
                                             <p className="text-muted-foreground">{withdrawal.accountNumber}</p>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="hidden md:table-cell">
                                             <Badge variant={withdrawal.status === 'Approved' ? 'default' : withdrawal.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{withdrawal.status}</Badge>
                                         </TableCell>
                                         <TableCell className="text-right space-x-1">
-                                            <Button variant="ghost" size="icon" disabled={withdrawal.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'}>
                                                 <CheckCircle className="h-4 w-4 text-green-500" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" disabled={withdrawal.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'}>
                                                 <XCircle className="h-4 w-4 text-red-500" />
                                             </Button>
                                         </TableCell>
