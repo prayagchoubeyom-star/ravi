@@ -74,16 +74,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
             return;
         }
 
-        if (finalOrderSide === 'sell') {
-            if (!currentPosition) {
-                form.setError('quantity', { message: `You have no ${crypto.ticker} to sell.` });
-                return;
-            }
-            if (values.quantity > currentPosition.quantity) {
-                form.setError('quantity', { message: `Cannot sell more than you own (${currentPosition.quantity.toFixed(6)}).` });
-                return;
-            }
-        }
+        // Removed sell validation to allow short selling
 
         addOrder({
             cryptoTicker: crypto.ticker,
@@ -103,14 +94,12 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
     const handleBuyClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setOrderSide('buy');
-        // We need to use a timeout to ensure the state updates before validation
         setTimeout(() => form.handleSubmit(onSubmit)(), 0);
     };
 
     const handleSellClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setOrderSide('sell');
-        // We need to use a timeout to ensure the state updates before validation
         setTimeout(() => form.handleSubmit(onSubmit)(), 0);
     };
 
@@ -217,18 +206,14 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
 
                 <div className="p-4 border-t mt-auto bg-background">
                      <div className="flex justify-between text-sm text-muted-foreground mb-4">
-                        {orderSide === 'buy' ? (
-                            <span>Available: <span className="text-foreground font-medium">${balance.toLocaleString()}</span></span>
-                        ) : (
-                            <span>Holding: <span className="text-foreground font-medium">{currentPosition?.quantity.toFixed(6) || 0} {crypto.ticker}</span></span>
-                        )}
+                        <span>Available: <span className="text-foreground font-medium">${balance.toLocaleString()}</span></span>
                         <span>Cost: <span className="text-foreground font-medium">${cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></span>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <Button onClick={handleBuyClick} size="lg" className="w-full text-lg bg-[hsl(142,76%,42%)] hover:bg-[hsl(142,76%,38%)] text-white">
                             Buy
                         </Button>
-                         <Button onClick={handleSellClick} size="lg" className={cn("w-full text-lg bg-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,55%)] text-white")} disabled={!currentPosition}>
+                         <Button onClick={handleSellClick} size="lg" className="w-full text-lg bg-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,55%)] text-white">
                             Sell
                         </Button>
                     </div>

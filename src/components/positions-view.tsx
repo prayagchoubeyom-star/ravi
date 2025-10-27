@@ -43,7 +43,7 @@ export function PositionsView() {
   });
   
   const totalValue = positionsWithCurrentPrice.reduce((acc, pos) => acc + pos.quantity * pos.currentPrice, 0);
-  const totalCost = positionsWithCurrentPrice.reduce((acc, pos) => acc + pos.quantity * pos.avgPrice, 0);
+  const totalCost = positionsWithCurrentPrice.reduce((acc, pos) => acc + Math.abs(pos.quantity) * pos.avgPrice, 0);
   const totalPL = totalValue - totalCost;
   const totalPLPercent = totalCost > 0 ? (totalPL / totalCost) * 100 : 0;
 
@@ -81,9 +81,11 @@ export function PositionsView() {
       {positionsWithCurrentPrice.length > 0 ? (
         <div className="space-y-3">
             {positionsWithCurrentPrice.map(pos => {
-                const currentValue = pos.quantity * pos.currentPrice;
-                const costBasis = pos.quantity * pos.avgPrice;
-                const pl = currentValue - costBasis;
+                const isShort = pos.quantity < 0;
+                const quantity = Math.abs(pos.quantity);
+                const currentValue = quantity * pos.currentPrice;
+                const costBasis = quantity * pos.avgPrice;
+                const pl = isShort ? costBasis - currentValue : currentValue - costBasis;
                 const plPercent = costBasis > 0 ? (pl / costBasis) * 100 : 0;
 
                 return (
@@ -93,8 +95,16 @@ export function PositionsView() {
                                 <div className="flex items-center gap-3">
                                     <CryptoIcon ticker={pos.cryptoTicker} className="w-10 h-10"/>
                                     <div>
-                                        <p className="font-bold text-base">{pos.cryptoTicker}</p>
-                                        <p className="text-sm text-muted-foreground font-mono">{pos.quantity.toFixed(4)} @ ${pos.avgPrice.toLocaleString()}</p>
+                                        <p className="font-bold text-base flex items-center gap-2">
+                                            {pos.cryptoTicker}
+                                            <span className={cn(
+                                                "text-xs font-semibold px-2 py-0.5 rounded-full",
+                                                isShort ? "bg-red-500/20 text-red-400" : "bg-green-500/20 text-green-400"
+                                            )}>
+                                                {isShort ? 'SHORT' : 'LONG'}
+                                            </span>
+                                        </p>
+                                        <p className="text-sm text-muted-foreground font-mono">{quantity.toFixed(4)} @ ${pos.avgPrice.toLocaleString()}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">

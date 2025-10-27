@@ -81,52 +81,58 @@ export function TradingProvider({ children }: { children: ReactNode }) {
     setOrders(prev => [newOrder, ...prev]);
 
     const cost = newOrder.amount * newOrder.price;
+    const isBuy = newOrder.type === 'Buy';
 
-    if (newOrder.type === 'Buy') {
-        updateUserBalance(user.id, balance - cost);
-        setPositions(prevPositions => {
-            const existingPositionIndex = prevPositions.findIndex(p => p.cryptoTicker === newOrder.cryptoTicker);
-            if (existingPositionIndex > -1) {
-                const existingPosition = prevPositions[existingPositionIndex];
-                const totalQuantity = existingPosition.quantity + newOrder.amount;
-                const totalCost = (existingPosition.avgPrice * existingPosition.quantity) + cost;
-                const newAvgPrice = totalCost / totalQuantity;
-                const updatedPositions = [...prevPositions];
-                updatedPositions[existingPositionIndex] = { ...existingPosition, quantity: totalQuantity, avgPrice: newAvgPrice };
-                return updatedPositions;
-            } else {
-                const newPosition: Position = { cryptoTicker: newOrder.cryptoTicker, quantity: newOrder.amount, avgPrice: newOrder.price };
-                return [...prevPositions, newPosition];
-            }
-        });
-    } else { // Sell order
-        updateUserBalance(user.id, balance + cost);
-        setPositions(prevPositions => {
-            const existingPositionIndex = prevPositions.findIndex(p => p.cryptoTicker === newOrder.cryptoTicker);
-            if (existingPositionIndex > -1) {
-                const existingPosition = prevPositions[existingPositionIndex];
-                const newQuantity = existingPosition.quantity - newOrder.amount;
-                if (newQuantity <= 0.00001) {
-                    return prevPositions.filter(p => p.cryptoTicker !== newOrder.cryptoTicker);
-                } else {
-                    const updatedPositions = [...prevPositions];
-                    updatedPositions[existingPositionIndex] = { ...existingPosition, quantity: newQuantity };
-                    return updatedPositions;
-                }
-            }
-            return prevPositions;
-        });
+    if (isBuy) {
+        updateUserBalance(user.id, prevBalance => prevBalance - cost);
+    } else { // Sell
+        updateUserBalance(user.id, prevBalance => prevBalance + cost);
     }
+
+    setPositions(prevPositions => {
+        const existingPositionIndex = prevPositions.findIndex(p => p.cryptoTicker === newOrder.cryptoTicker);
+        
+        if (existingPositionIndex > -1) {
+            const existingPosition = prevPositions[existingPositionIndex];
+            const newQuantity = isBuy ? existingPosition.quantity + newOrder.amount : existingPosition.quantity - newOrder.amount;
+            
+            if (Math.abs(newQuantity) < 0.000001) { // If position is closed
+                return prevPositions.filter(p => p.cryptoTicker !== newOrder.cryptoTicker);
+            }
+
+            const totalCost = (existingPosition.avgPrice * existingPosition.quantity) + (isBuy ? cost : -cost);
+            const newAvgPrice = (newQuantity > 0) ? Math.abs(totalCost / newQuantity) : 0;
+            
+            const updatedPositions = [...prevPositions];
+            updatedPositions[existingPositionIndex] = { 
+                ...existingPosition, 
+                quantity: newQuantity, 
+                avgPrice: newAvgPrice // avgPrice for shorts is more complex, but this is a simple approximation
+            };
+            return updatedPositions;
+        } else { // No existing position
+            const newPosition: Position = { 
+                cryptoTicker: newOrder.cryptoTicker, 
+                quantity: isBuy ? newOrder.amount : -newOrder.amount, 
+                avgPrice: newOrder.price 
+            };
+            return [...prevPositions, newPosition];
+        }
+    });
   };
 
   const closePosition = (cryptoTicker: string, currentPrice: number) => {
     const positionToClose = positions.find(p => p.cryptoTicker === cryptoTicker);
     if (!positionToClose) return;
 
+    // If long position, sell. If short position, buy.
+    const orderType = positionToClose.quantity > 0 ? 'Sell' : 'Buy';
+    const amountToClose = Math.abs(positionToClose.quantity);
+
     addOrder({
         cryptoTicker: positionToClose.cryptoTicker,
-        type: 'Sell',
-        amount: positionToClose.quantity,
+        type: orderType,
+        amount: amountToClose,
         price: currentPrice,
     });
   };
