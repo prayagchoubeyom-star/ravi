@@ -1,6 +1,8 @@
+
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -16,7 +18,7 @@ import { useCryptoData } from '@/hooks/use-crypto-data';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
 import { useTrading } from '@/context/trading-context';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 import type { Crypto } from '@/lib/data';
 import {
   Card,
@@ -24,12 +26,14 @@ import {
 } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from './ui/sheet';
 import { TradeView } from './trade-view';
+import { useAuth } from '@/context/auth-context';
 
 export function WatchlistView() {
   const { allCryptos, loading } = useCryptoData();
   const { watchlist, addToWatchlist, removeFromWatchlist } = useTrading();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCrypto, setSelectedCrypto] = useState<Crypto | null>(null);
+  const { user } = useAuth();
   
   const watchlistCryptos = allCryptos.filter(c => watchlist.includes(c.ticker));
 
@@ -88,6 +92,24 @@ export function WatchlistView() {
   return (
     <>
       <div className="p-4 space-y-4">
+        <div className="space-y-2">
+            <h2 className="text-2xl font-bold">Welcome, {user?.name.split(' ')[0]}!</h2>
+            <div className="grid grid-cols-2 gap-2">
+                <Button asChild variant="outline">
+                    <Link href="/deposit">
+                        <ArrowDownToLine className="w-4 h-4 mr-2"/>
+                        Deposit
+                    </Link>
+                </Button>
+                <Button asChild variant="outline">
+                    <Link href="/withdraw">
+                        <ArrowUpFromLine className="w-4 h-4 mr-2"/>
+                        Withdraw
+                    </Link>
+                </Button>
+            </div>
+        </div>
+
         <Input
           placeholder="Search to add coins..."
           value={searchTerm}
