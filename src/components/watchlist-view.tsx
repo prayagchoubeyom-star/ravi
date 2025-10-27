@@ -24,7 +24,7 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card';
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from './ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetHeader } from './ui/sheet';
 import { TradeView } from './trade-view';
 import { useAuth } from '@/context/auth-context';
 
@@ -179,13 +179,13 @@ export function WatchlistView() {
         </div>
       </div>
       <Sheet open={!!selectedCrypto} onOpenChange={(open) => !open && setSelectedCrypto(null)}>
-        <SheetContent side="bottom" className="h-[90%] flex flex-col p-0">
+        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0">
           {selectedCrypto && (
             <>
-              <div className="p-4 border-b">
+              <SheetHeader className="p-4 border-b">
                 <SheetTitle>Trade {selectedCrypto.ticker}</SheetTitle>
                 <SheetDescription>Place a buy or sell order.</SheetDescription>
-              </div>
+              </SheetHeader>
               <TradeView crypto={selectedCrypto} onClose={() => setSelectedCrypto(null)} />
             </>
           )}
