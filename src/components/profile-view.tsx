@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-context';
-import { user } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ChevronRight, LogOut, Newspaper, TrendingUp, HelpCircle, Mail, KeyRound } from 'lucide-react';
 import Link from 'next/link';
@@ -25,7 +24,7 @@ export function ProfileView() {
     <div className="p-4 space-y-6">
       <div className="flex items-center gap-4">
         <Avatar className="h-20 w-20">
-            {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt={user.name} data-ai-hint={userAvatar.imageHint} />}
+            {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt={authUser?.name} data-ai-hint={userAvatar.imageHint} />}
             <AvatarFallback>{authUser?.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
