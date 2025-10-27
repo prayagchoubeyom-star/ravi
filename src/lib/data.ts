@@ -85,6 +85,8 @@ export const adminUsers = [
     { id: '1', name: 'Alex Doe', email: 'alex.doe@example.com', password: 'password123' },
     { id: '2', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password123' },
     { id: '3', name: 'John Johnson', email: 'john.johnson@example.com', password: 'password123' },
+    { id: '4', name: 'Test User', email: 'test@gmail.com', password: 'password123' },
+    { id: '5', name: 'Test User 1', email: 'test1@gmail.com', password: 'password123' },
 ];
 
 export const adminDeposits = [
