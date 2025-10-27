@@ -173,9 +173,15 @@ export function WatchlistView() {
       </div>
       <Sheet open={!!selectedCrypto} onOpenChange={(open) => !open && setSelectedCrypto(null)}>
         <SheetContent side="bottom" className="h-[90%] flex flex-col p-0">
-          <SheetTitle className="sr-only">Trade</SheetTitle>
-          <SheetDescription className="sr-only">Place a buy or sell order for the selected cryptocurrency.</SheetDescription>
-          {selectedCrypto && <TradeView crypto={selectedCrypto} onClose={() => setSelectedCrypto(null)} />}
+          {selectedCrypto && (
+            <>
+              <div className="p-4 border-b">
+                <SheetTitle>Trade {selectedCrypto.ticker}</SheetTitle>
+                <SheetDescription>Place a buy or sell order.</SheetDescription>
+              </div>
+              <TradeView crypto={selectedCrypto} onClose={() => setSelectedCrypto(null)} />
+            </>
+          )}
         </SheetContent>
       </Sheet>
     </>

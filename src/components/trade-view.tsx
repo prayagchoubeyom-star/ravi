@@ -19,6 +19,7 @@ import type { Crypto } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { useMemo } from 'react';
+import { ScrollArea } from './ui/scroll-area';
 
 const orderSchema = z.object({
   type: z.enum(['buy', 'sell']),
@@ -99,113 +100,114 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
     <div className="flex flex-col h-full bg-background">
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1">
-                <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-                    
-                    <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                            <FormItem className="space-y-0">
-                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
-                                    <FormItem>
-                                        <FormControl>
-                                            <RadioGroupItem value="buy" id="buy" className="peer sr-only" />
-                                        </FormControl>
-                                        <Label htmlFor="buy" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-[hsl(142,76%,42%)] peer-data-[state=checked]:bg-[hsl(142,76%,42%)]/10 peer-data-[state=checked]:text-[hsl(142,76%,42%)]">
-                                            BUY
-                                        </Label>
-                                    </FormItem>
-                                    <FormItem>
-                                        <FormControl>
-                                            <RadioGroupItem value="sell" id="sell" className="peer sr-only" disabled={!currentPosition} />
-                                        </FormControl>
-                                        <Label htmlFor="sell" className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold",
-                                            !currentPosition ? "cursor-not-allowed opacity-50" : "hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-[hsl(0,84%,60%)] peer-data-[state=checked]:bg-[hsl(0,84%,60%)]/10 peer-data-[state=checked]:text-[hsl(0,84%,60%)]"
-                                        )}>
-                                            SELL
-                                        </Label>
-                                    </FormItem>
-                                </RadioGroup>
-                            </FormItem>
-                        )}
-                    />
-                    
-                    <FormField
-                        control={form.control}
-                        name="product"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Product</FormLabel>
-                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
-                                    <FormItem>
-                                        <FormControl>
-                                            <RadioGroupItem value="market" id="market-product" className="peer sr-only" />
-                                        </FormControl>
-                                        <Label htmlFor="market-product" className="flex flex-col items-center justify-center text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                            Market
-                                        </Label>
-                                    </FormItem>
-                                    <FormItem>
-                                        <FormControl>
-                                            <RadioGroupItem value="limit" id="limit-product" className="peer sr-only" />
-                                        </FormControl>
-                                        <Label htmlFor="limit-product" className="flex flex-col items-center justify-center text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                            Limit
-                                        </Label>
-                                    </FormItem>
-                                </RadioGroup>
-                            </FormItem>
-                        )}
-                    />
+                <ScrollArea className="flex-1">
+                    <div className="p-4 space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="type"
+                            render={({ field }) => (
+                                <FormItem className="space-y-0">
+                                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
+                                        <FormItem>
+                                            <FormControl>
+                                                <RadioGroupItem value="buy" id="buy" className="peer sr-only" />
+                                            </FormControl>
+                                            <Label htmlFor="buy" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-[hsl(142,76%,42%)] peer-data-[state=checked]:bg-[hsl(142,76%,42%)]/10 peer-data-[state=checked]:text-[hsl(142,76%,42%)]">
+                                                BUY
+                                            </Label>
+                                        </FormItem>
+                                        <FormItem>
+                                            <FormControl>
+                                                <RadioGroupItem value="sell" id="sell" className="peer sr-only" disabled={!currentPosition} />
+                                            </FormControl>
+                                            <Label htmlFor="sell" className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 text-lg font-bold",
+                                                !currentPosition ? "cursor-not-allowed opacity-50" : "hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-[hsl(0,84%,60%)] peer-data-[state=checked]:bg-[hsl(0,84%,60%)]/10 peer-data-[state=checked]:text-[hsl(0,84%,60%)]"
+                                            )}>
+                                                SELL
+                                            </Label>
+                                        </FormItem>
+                                    </RadioGroup>
+                                </FormItem>
+                            )}
+                        />
+                        
+                        <FormField
+                            control={form.control}
+                            name="product"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Product</FormLabel>
+                                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
+                                        <FormItem>
+                                            <FormControl>
+                                                <RadioGroupItem value="market" id="market-product" className="peer sr-only" />
+                                            </FormControl>
+                                            <Label htmlFor="market-product" className="flex flex-col items-center justify-center text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                                Market
+                                            </Label>
+                                        </FormItem>
+                                        <FormItem>
+                                            <FormControl>
+                                                <RadioGroupItem value="limit" id="limit-product" className="peer sr-only" />
+                                            </FormControl>
+                                            <Label htmlFor="limit-product" className="flex flex-col items-center justify-center text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                                Limit
+                                            </Label>
+                                        </FormItem>
+                                    </RadioGroup>
+                                </FormItem>
+                            )}
+                        />
 
-                    <div className="grid grid-cols-1 gap-4">
-                        <FormField
-                            control={form.control}
-                            name="quantity"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Quantity</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} /></FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="price"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Price</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} disabled={productType === 'market'} placeholder={productType === 'market' ? 'At Market' : ''} /></FormControl>
-                                </FormItem>
-                            )}
-                        />
+                        <div className="grid grid-cols-1 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="quantity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Quantity</FormLabel>
+                                    <FormControl><Input type="number" step="any" {...field} /></FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="price"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Price</FormLabel>
+                                    <FormControl><Input type="number" step="any" {...field} disabled={productType === 'market'} placeholder={productType === 'market' ? 'At Market' : ''} /></FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        {form.formState.errors.quantity && <p className="text-sm font-medium text-destructive">{form.formState.errors.quantity.message}</p>}
+                        {form.formState.errors.price && <p className="text-sm font-medium text-destructive">{form.formState.errors.price.message}</p>}
+                        
+                        <div className="grid grid-cols-1 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="target"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Target (Optional)</FormLabel>
+                                    <FormControl><Input type="number" step="any" {...field} /></FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="stoploss"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Stop-loss (Optional)</FormLabel>
+                                    <FormControl><Input type="number" step="any" {...field} /></FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                     </div>
-                    {form.formState.errors.quantity && <p className="text-sm font-medium text-destructive">{form.formState.errors.quantity.message}</p>}
-                    {form.formState.errors.price && <p className="text-sm font-medium text-destructive">{form.formState.errors.price.message}</p>}
-                    
-                    <div className="grid grid-cols-1 gap-4">
-                        <FormField
-                            control={form.control}
-                            name="target"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Target (Optional)</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} /></FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="stoploss"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Stop-loss (Optional)</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} /></FormControl>
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                </div>
+                </ScrollArea>
 
                 <div className="p-4 border-t mt-auto bg-background">
                      <div className="flex justify-between text-sm text-muted-foreground mb-4">

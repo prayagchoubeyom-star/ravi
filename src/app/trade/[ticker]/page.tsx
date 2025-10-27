@@ -4,6 +4,7 @@ import { AppHeader } from "@/components/app-header";
 import { useCryptoData } from "@/hooks/use-crypto-data";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 export default function TradePage({ params }: { params: { ticker: string } }) {
   const { allCryptos, loading } = useCryptoData();
