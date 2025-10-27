@@ -1,13 +1,13 @@
 
 import { AppHeader } from "@/components/app-header";
-import { ProfileView } from "@/components/profile-view";
+import { ContactView } from "@/components/contact-view";
 import { ProtectedRoute } from "@/components/protected-route";
 
-export default function ProfilePage() {
+export default function ContactPage() {
   return (
     <ProtectedRoute>
-      <AppHeader title="Profile" />
-      <ProfileView />
+      <AppHeader title="Contact Us" hasBack />
+      <ContactView />
     </ProtectedRoute>
   );
 }
