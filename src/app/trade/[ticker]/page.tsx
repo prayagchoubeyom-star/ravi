@@ -26,26 +26,34 @@ export default function TradePage({ params }: { params: { ticker: string } }) {
       }
     }
     loadData();
+    const interval = setInterval(loadData, 1000); // Poll for live price
+    return () => clearInterval(interval);
   }, []);
   
   const crypto = allCryptos.find(c => c.ticker === params.ticker.toUpperCase());
   
   if (loading) {
     return (
-      <div className="p-4 space-y-4">
-        <Skeleton className="h-10 w-1/2" />
-        <Skeleton className="h-[300px] w-full" />
-        <Skeleton className="h-[400px] w-full" />
-      </div>
+      <>
+        <AppHeader title={`Trade ${params.ticker.toUpperCase()}`} hasBack />
+        <div className="p-4 space-y-4">
+          <Skeleton className="h-10 w-1/2" />
+          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      </>
     );
   }
 
   if (!crypto) {
     return (
+      <>
+        <AppHeader title="Trade" hasBack />
         <div className="p-4 text-center">
-            <p>Crypto currency not found.</p>
+            <p>Cryptocurrency not found.</p>
             <Button onClick={() => router.back()} className="mt-4">Go Back</Button>
         </div>
+      </>
     );
   }
 
