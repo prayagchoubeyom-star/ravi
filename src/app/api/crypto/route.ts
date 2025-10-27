@@ -27,7 +27,7 @@ const getCryptoName = (ticker: string): string => {
 export async function GET() {
   try {
     const response = await fetch('https://api.binance.com/api/v3/ticker/24hr', {
-      next: { revalidate: 10 } // Revalidate every 10 seconds
+      cache: 'no-store' // This is the crucial change to prevent caching on Vercel
     });
 
     if (!response.ok) {
@@ -55,10 +55,11 @@ export async function GET() {
 
     return NextResponse.json(allData);
 
-  } catch (error) {
+  } catch (error)
+{
     console.error("Error in /api/crypto route:", error);
     // In case of an error, return an empty array with a 500 status code
-    return NextResponse.json([], { status: 500 });
+    return NextResponse.json([], { status: 500, statusText: (error as Error).message || 'Internal Server Error' });
   }
 }
 
