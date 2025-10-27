@@ -11,9 +11,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { adminUsers, adminDeposits, adminWithdrawals } from '@/lib/data';
+import { adminUsers as initialAdminUsers, adminDeposits, adminWithdrawals } from '@/lib/data';
 import { Button } from './ui/button';
-import { Trash2, CheckCircle, XCircle, DollarSign, Upload, UserPlus, Eye, Edit } from 'lucide-react';
+import { Trash2, CheckCircle, XCircle, UserPlus, Eye, Edit } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useAdmin } from '@/context/admin-context';
@@ -51,6 +51,7 @@ export function AdminView() {
   const { qrCodeUrl, setQrCodeUrl, addFunds } = useAdmin();
   const { toast } = useToast();
   const router = useRouter();
+  const [adminUsers, setAdminUsers] = useState(initialAdminUsers);
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -72,12 +73,15 @@ export function AdminView() {
   };
 
   const handleCreateUser = () => {
-    // This is a mock implementation.
-    // In a real app, this would call an API to create a user.
     if (newUserName && newUserEmail && newUserPassword) {
-        console.log("Creating user:", { name: newUserName, email: newUserEmail });
+        const newUser = {
+            id: (Math.random() * 1000000).toString(),
+            name: newUserName,
+            email: newUserEmail,
+        };
+        setAdminUsers(prevUsers => [newUser, ...prevUsers]);
         toast({
-            title: "User Created (Mock)",
+            title: "User Created",
             description: `User ${newUserName} has been created.`,
         });
         setNewUserName('');
