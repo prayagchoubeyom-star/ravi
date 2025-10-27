@@ -165,18 +165,18 @@ export function AdminView() {
                         <Table>
                             <TableHeader>
                             <TableRow>
-                                <TableHead>User</TableHead>
-                                <TableHead className="hidden sm:table-cell">Email</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead className="px-2">User</TableHead>
+                                <TableHead className="hidden sm:table-cell px-2">Email</TableHead>
+                                <TableHead className="text-right px-2">Actions</TableHead>
                             </TableRow>
                             </TableHeader>
                             <TableBody>
                             {adminUsers.map((user) => (
                                 <TableRow key={user.id}>
-                                <TableCell className="font-medium">{user.name}</TableCell>
-                                <TableCell className="hidden sm:table-cell">{user.email}</TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex flex-wrap items-center justify-end gap-1">
+                                <TableCell className="font-medium px-2">{user.name}</TableCell>
+                                <TableCell className="hidden sm:table-cell px-2">{user.email}</TableCell>
+                                <TableCell className="text-right px-2">
+                                    <div className="flex items-center justify-end gap-1">
                                         <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
                                             <Eye className="h-4 w-4" />
                                         </Button>
