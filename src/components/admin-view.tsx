@@ -331,6 +331,3 @@ export function AdminView() {
       </Card>
     </div>
   );
-
-    
-    
