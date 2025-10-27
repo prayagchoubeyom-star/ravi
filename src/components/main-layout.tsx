@@ -36,8 +36,8 @@ const BottomNav = () => {
     return userRole !== 'admin'; // Hide user items for admin
   });
 
-  // If login page, or no role, don't show nav
-  if (pathname === '/login' || !userRole) return null;
+  // If login page, signup page, or no role, don't show nav
+  if (pathname === '/login' || pathname === '/signup' || !userRole) return null;
 
   return (
     <nav className="border-t bg-background/95 backdrop-blur-sm">
@@ -67,11 +67,12 @@ const BottomNav = () => {
 
 export const MainLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
-  const isLoginPage = pathname === '/login';
+  const noNavPages = ['/login', '/signup'];
+  const showNav = !noNavPages.includes(pathname);
 
   return (
     <div className="relative flex h-full flex-col bg-background">
-      <ScrollArea className={cn("flex-1", !isLoginPage && "pb-16")}>
+      <ScrollArea className={cn("flex-1", showNav && "pb-16")}>
         {children}
       </ScrollArea>
       <div className="absolute bottom-0 left-0 right-0 z-20">
