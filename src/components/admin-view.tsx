@@ -159,20 +159,20 @@ export function AdminView() {
               </Dialog>
           </CardHeader>
           <CardContent>
-              <div className="rounded-lg border">
+              <div className="rounded-lg border overflow-x-auto">
                   <Table>
                       <TableHeader>
                       <TableRow>
                           <TableHead className="px-2">User</TableHead>
-                          <TableHead className="hidden sm:table-cell px-2">Email</TableHead>
+                          <TableHead className="px-2">Email</TableHead>
                           <TableHead className="text-right px-2">Actions</TableHead>
                       </TableRow>
                       </TableHeader>
                       <TableBody>
                       {users.filter(u => u.email !== 'wellfiree').map((user) => (
                           <TableRow key={user.id}>
-                          <TableCell className="font-medium px-2">{user.name}</TableCell>
-                          <TableCell className="hidden sm:table-cell px-2">{user.email}</TableCell>
+                          <TableCell className="font-medium px-2 whitespace-nowrap">{user.name}</TableCell>
+                          <TableCell className="px-2">{user.email}</TableCell>
                           <TableCell className="text-right px-2">
                               <div className="flex flex-wrap items-center justify-end gap-1">
                                   <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
@@ -229,22 +229,22 @@ export function AdminView() {
               <CardDescription>Approve or reject user deposit requests.</CardDescription>
           </CardHeader>
           <CardContent>
-              <div className="rounded-lg border">
+              <div className="rounded-lg border overflow-x-auto">
                   <Table>
                       <TableHeader>
                           <TableRow>
                               <TableHead>User</TableHead>
                               <TableHead>Amount</TableHead>
-                              <TableHead className="hidden sm:table-cell">Status</TableHead>
+                              <TableHead>Status</TableHead>
                               <TableHead className="text-right">Actions</TableHead>
                           </TableRow>
                       </TableHeader>
                       <TableBody>
                           {deposits.map((deposit) => (
                               <TableRow key={deposit.id}>
-                                  <TableCell>{deposit.userName}</TableCell>
+                                  <TableCell className="whitespace-nowrap">{deposit.userName}</TableCell>
                                   <TableCell>${deposit.amount.toLocaleString()}</TableCell>
-                                  <TableCell className="hidden sm:table-cell">
+                                  <TableCell>
                                       <Badge variant={deposit.status === 'Approved' ? 'default' : deposit.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{deposit.status}</Badge>
                                   </TableCell>
                                   <TableCell className="text-right space-x-1">
@@ -269,26 +269,26 @@ export function AdminView() {
               <CardDescription>Approve or reject user withdrawal requests.</CardDescription>
           </CardHeader>
           <CardContent>
-              <div className="rounded-lg border">
+              <div className="rounded-lg border overflow-x-auto">
                   <Table>
                       <TableHeader>
                           <TableRow>
                               <TableHead>User</TableHead>
                               <TableHead>Amount</TableHead>
-                              <TableHead className="hidden sm:table-cell">UPI ID</TableHead>
-                              <TableHead className="hidden md:table-cell">Status</TableHead>
+                              <TableHead>UPI ID</TableHead>
+                              <TableHead>Status</TableHead>
                               <TableHead className="text-right">Actions</TableHead>
                           </TableRow>
                       </TableHeader>
                       <TableBody>
                           {withdrawals.map((withdrawal) => (
                               <TableRow key={withdrawal.id}>
-                                  <TableCell>{withdrawal.userName}</TableCell>
+                                  <TableCell className="whitespace-nowrap">{withdrawal.userName}</TableCell>
                                   <TableCell>${withdrawal.amount.toLocaleString()}</TableCell>
-                                  <TableCell className="text-xs hidden sm:table-cell">
+                                  <TableCell className="text-xs">
                                       <p>{withdrawal.upiId}</p>
                                   </TableCell>
-                                  <TableCell className="hidden md:table-cell">
+                                  <TableCell>
                                       <Badge variant={withdrawal.status === 'Approved' ? 'default' : withdrawal.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{withdrawal.status}</Badge>
                                   </TableCell>
                                   <TableCell className="text-right space-x-1">

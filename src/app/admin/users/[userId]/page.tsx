@@ -71,7 +71,7 @@ export default function UserDetailsPage({ params: { userId } }: { params: { user
                 <CardDescription>Order history for this user.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="rounded-lg border">
+                <div className="rounded-lg border overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>

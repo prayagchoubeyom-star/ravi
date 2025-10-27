@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Table,
@@ -25,7 +26,7 @@ export function OrdersView() {
         return <p className="text-muted-foreground text-center p-8">No orders to display.</p>
     }
     return (
-        <div className="rounded-lg border">
+        <div className="rounded-lg border overflow-x-auto">
         <Table>
             <TableHeader>
             <TableRow>
@@ -46,7 +47,7 @@ export function OrdersView() {
                         </div>
                     </div>
                 </TableCell>
-                <TableCell className="font-mono text-xs">
+                <TableCell className="font-mono text-xs whitespace-nowrap">
                     <p>Qty: {order.amount.toFixed(4)}</p>
                     <p>Price: ${order.price.toFixed(2)}</p>
                     <p className="text-muted-foreground">{format(new Date(order.date), 'dd MMM yyyy, HH:mm')}</p>
