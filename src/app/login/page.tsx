@@ -32,7 +32,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-background p-4">
-      <div className="text-3xl font-bold mb-8 text-primary tracking-tight uppercase">
+      <div className="mb-8 text-4xl font-extrabold tracking-tighter uppercase drop-shadow-md bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
         WELLFIREE
       </div>
       <Card className="w-full max-w-sm">
