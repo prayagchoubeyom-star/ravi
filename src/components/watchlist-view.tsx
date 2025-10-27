@@ -95,20 +95,20 @@ export function WatchlistView() {
         <div className="space-y-2">
             <h2 className="text-2xl font-bold">Welcome, {user?.name.split(' ')[0]}!</h2>
             <div className="text-muted-foreground">Available Balance: <span className="font-bold text-lg text-foreground">${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-             <div className="flex items-center gap-2">
-                <Button asChild variant="outline" size="sm" className="flex-auto h-9 px-2">
+             <div className="flex flex-wrap items-center gap-2">
+                <Button asChild variant="outline" size="sm" className="flex-1 h-9 px-2">
                     <Link href="/deposit" className="flex items-center justify-center gap-1 text-xs">
                         <ArrowDownToLine className="w-3 h-3"/>
                         <span>Deposit</span>
                     </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="flex-auto h-9 px-2">
+                <Button asChild variant="outline" size="sm" className="flex-1 h-9 px-2">
                     <Link href="/withdraw" className="flex items-center justify-center gap-1 text-xs">
                         <ArrowUpFromLine className="w-3 h-3"/>
                         <span>Withdrawal</span>
                     </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="flex-auto h-9 px-2">
+                <Button asChild variant="outline" size="sm" className="flex-1 h-9 px-2">
                     <Link href="/history" className="flex items-center justify-center gap-1 text-xs">
                         <History className="w-3 h-3"/>
                         <span>History</span>
