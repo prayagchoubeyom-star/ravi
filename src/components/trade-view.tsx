@@ -68,13 +68,12 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
 
     function onSubmit(values: z.infer<typeof orderSchema>) {
         const finalOrderSide = orderSide;
+        const orderCost = values.quantity * (values.product === 'limit' ? values.price! : crypto.price);
 
-        if (finalOrderSide === 'buy' && cost > balance) {
-            form.setError('quantity', { message: 'Insufficient balance.' });
+        if (orderCost > balance) {
+            form.setError('quantity', { message: 'Insufficient balance for this order.' });
             return;
         }
-
-        // Removed sell validation to allow short selling
 
         addOrder({
             cryptoTicker: crypto.ticker,
