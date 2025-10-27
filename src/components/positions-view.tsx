@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Card,
@@ -46,11 +47,11 @@ export function PositionsView() {
   const totalPL = totalValue - totalCost;
   const totalPLPercent = totalCost > 0 ? (totalPL / totalCost) * 100 : 0;
 
-  const handleExitPosition = (ticker: string) => {
-    closePosition(ticker);
+  const handleExitPosition = (ticker: string, currentPrice: number) => {
+    closePosition(ticker, currentPrice);
     toast({
         title: "Position Closed",
-        description: `Your position in ${ticker} has been closed.`,
+        description: `Your position in ${ticker} has been closed at market price.`,
     });
   }
 
@@ -123,7 +124,7 @@ export function PositionsView() {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => handleExitPosition(pos.cryptoTicker)}>
+                                      <AlertDialogAction onClick={() => handleExitPosition(pos.cryptoTicker, pos.currentPrice)}>
                                         Confirm Exit
                                       </AlertDialogAction>
                                     </AlertDialogFooter>

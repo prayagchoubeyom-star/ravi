@@ -14,7 +14,7 @@ interface TradingContextType {
   addToWatchlist: (ticker: string) => void;
   removeFromWatchlist: (ticker: string) => void;
   addOrder: (order: Omit<Order, 'id' | 'status' | 'date'>) => void;
-  closePosition: (cryptoTicker: string) => void;
+  closePosition: (cryptoTicker: string, currentPrice: number) => void;
   addFunds: (amount: number, userId?: string) => void;
   setQrCodeUrl: (url: string) => void;
 }
@@ -134,25 +134,16 @@ export function TradingProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const closePosition = (cryptoTicker: string) => {
+  const closePosition = (cryptoTicker: string, currentPrice: number) => {
     const positionToClose = positions.find(p => p.cryptoTicker === cryptoTicker);
     if (!positionToClose) return;
 
-    // Create a sell order to log the transaction
-     const sellOrder: Order = {
-      id: (Math.random() * 1000000).toString(),
-      cryptoTicker: positionToClose.cryptoTicker,
-      type: 'Sell',
-      status: 'Filled',
-      amount: positionToClose.quantity,
-      price: 0, // In a real app, this would be the current market price
-      date: new Date().toISOString(),
-    };
+    // Create a sell order at the current market price to log the transaction and update the balance
     addOrder({
-        cryptoTicker: sellOrder.cryptoTicker,
+        cryptoTicker: positionToClose.cryptoTicker,
         type: 'Sell',
-        amount: sellOrder.amount,
-        price: 0, // In a real app, get current price
+        amount: positionToClose.quantity,
+        price: currentPrice,
     });
   };
 
