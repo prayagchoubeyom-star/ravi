@@ -19,12 +19,14 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    // In a real app, you would call a user authentication service.
+    // For this prototype, we'll continue using the admin credentials.
     if (login(username, password)) {
       toast({
         title: 'Login Successful',
-        description: 'Welcome to the admin panel.',
+        description: 'Welcome!',
       });
-      router.push('/admin');
+      router.push('/admin'); // Redirect admin to admin page
     } else {
       toast({
         variant: 'destructive',
@@ -38,8 +40,8 @@ export default function LoginPage() {
     <div className="flex items-center justify-center h-full bg-background">
       <Card className="w-full max-w-sm mx-4">
         <CardHeader>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
-          <CardDescription>Enter your credentials to access the admin panel.</CardDescription>
+          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardDescription>Enter your credentials to access your account.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -48,7 +50,7 @@ export default function LoginPage() {
               <Input
                 id="username"
                 type="text"
-                placeholder="wellfiree"
+                placeholder="Enter your username"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
