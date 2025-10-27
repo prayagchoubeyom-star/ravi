@@ -26,9 +26,10 @@ import { useToast } from "@/hooks/use-toast";
 export default function UserDetailsPage({ params }: { params: { userId: string } }) {
     const router = useRouter();
     const { toast } = useToast();
+    const { userId } = params;
     const [editPrice, setEditPrice] = useState(0);
 
-    const user = adminUsers.find(u => u.id === params.userId);
+    const user = adminUsers.find(u => u.id === userId);
 
     if (!user) {
         return (
@@ -121,4 +122,3 @@ export default function UserDetailsPage({ params }: { params: { userId: string }
     </>
   );
 }
-
