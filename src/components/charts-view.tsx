@@ -41,7 +41,7 @@ export function ChartsView() {
     }
     
     loadData(); // initial load
-    const interval = setInterval(loadData, 5000); // Refresh every 5 seconds
+    const interval = setInterval(loadData, 2000); // Refresh every 2 seconds
 
     return () => clearInterval(interval);
   }, [loading]);
@@ -57,7 +57,7 @@ export function ChartsView() {
       // If no crypto is selected yet, default to the first one
       setSelectedCrypto(allCryptos[0]);
     }
-  }, [allCryptos]); // This runs whenever allCryptos is updated
+  }, [allCryptos, selectedCrypto]); // This runs whenever allCryptos is updated
   
   const tradingViewSymbol = selectedCrypto ? tickerToSymbol[selectedCrypto.ticker] || `${selectedCrypto.ticker}USDT` : 'BTCUSDT';
 
