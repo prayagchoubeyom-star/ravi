@@ -4,11 +4,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -20,12 +21,7 @@ export default function LoginPage() {
     e.preventDefault();
     const success = login(email, password);
     
-    if (success) {
-      toast({
-        title: 'Login Successful',
-        description: 'Welcome!',
-      });
-    } else {
+    if (!success) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
@@ -69,6 +65,9 @@ export default function LoginPage() {
             </Button>
           </form>
         </CardContent>
+        <CardFooter className="text-sm justify-center">
+            <p className="text-muted-foreground">Don't have an account? <Link href="/signup" className="text-primary hover:underline">Sign Up</Link></p>
+        </CardFooter>
       </Card>
     </div>
   );
