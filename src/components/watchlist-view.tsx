@@ -96,21 +96,21 @@ export function WatchlistView() {
             <h2 className="text-2xl font-bold">Welcome, {user?.name.split(' ')[0]}!</h2>
             <div className="text-muted-foreground">Available Balance: <span className="font-bold text-lg text-foreground">${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
             <div className="grid grid-cols-3 gap-2">
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="px-2">
                     <Link href="/deposit">
-                        <ArrowDownToLine className="w-4 h-4 mr-2"/>
+                        <ArrowDownToLine className="w-4 h-4 mr-1"/>
                         Deposit
                     </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="px-2">
                     <Link href="/withdraw">
-                        <ArrowUpFromLine className="w-4 h-4 mr-2"/>
+                        <ArrowUpFromLine className="w-4 h-4 mr-1"/>
                         Withdraw
                     </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="px-2">
                     <Link href="/history">
-                        <History className="w-4 h-4 mr-2"/>
+                        <History className="w-4 h-4 mr-1"/>
                         History
                     </Link>
                 </Button>
