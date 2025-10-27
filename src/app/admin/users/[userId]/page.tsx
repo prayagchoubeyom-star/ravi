@@ -5,7 +5,6 @@ import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { initialOrders } from "@/lib/data";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -23,12 +22,14 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProtectedRoute } from "@/components/protected-route";
 import { useAuth } from "@/context/auth-context";
+import { useTrading } from "@/context/trading-context";
 
 
 export default function UserDetailsPage({ params: { userId } }: { params: { userId: string } }) {
     const router = useRouter();
     const { toast } = useToast();
     const { users } = useAuth();
+    const { orders } = useTrading();
     const [editPrice, setEditPrice] = useState(0);
 
     const user = users.find(u => u.id === userId);
@@ -43,7 +44,7 @@ export default function UserDetailsPage({ params: { userId } }: { params: { user
     }
     
     // Mock data for this specific user. In a real app, you would fetch this.
-    const userOrders = initialOrders.slice(0,3);
+    const userOrders = orders.slice(0,3);
 
     const handlePriceChange = (orderId: string) => {
         toast({

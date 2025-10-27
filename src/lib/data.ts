@@ -74,14 +74,6 @@ export type Order = {
   date: string;
 };
 
-export const initialOrders: Order[] = [
-  { id: '1', cryptoTicker: 'BTC', type: 'Buy', status: 'Filled', amount: 0.1, price: 67500, date: '2024-05-20T10:00:00Z' },
-  { id: '2', cryptoTicker: 'ETH', type: 'Sell', status: 'Filled', amount: 2, price: 3600, date: '2024-05-20T11:30:00Z' },
-  { id: '3', cryptoTicker: 'SOL', type: 'Buy', status: 'Open', amount: 50, price: 148, date: '2024-05-21T09:00:00Z' },
-  { id: '4', cryptoTicker: 'ADA', type: 'Buy', status: 'Cancelled', amount: 10000, price: 0.44, date: '2024-05-19T14:00:00Z' },
-  { id: '5', cryptoTicker: 'XRP', type: 'Sell', status: 'Open', amount: 5000, price: 0.55, date: '2024-05-21T10:15:00Z' },
-];
-
 // Mock data for Admin Panel
 export const adminUsers = [
     { id: '0', name: 'Admin', email: 'wellfiree', password: 'Arpit@54321', balance: 1000000 },
