@@ -25,7 +25,8 @@ import { useAuth } from "@/context/auth-context";
 import { useTrading } from "@/context/trading-context";
 
 
-export default function UserDetailsPage({ params: { userId } }: { params: { userId: string } }) {
+export default function UserDetailsPage({ params }: { params: { userId: string } }) {
+    const { userId } = params;
     const router = useRouter();
     const { toast } = useToast();
     const { users } = useAuth();
