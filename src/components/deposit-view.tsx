@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useTrading } from '@/context/trading-context';
 import Image from 'next/image';
+import { useTransactions } from '@/context/transaction-context';
+import { useAuth } from '@/context/auth-context';
 
 const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg aria-hidden="true" viewBox="0 0 128 128" {...props}>
@@ -28,7 +29,9 @@ export function DepositView() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const router = useRouter();
-  const { qrCodeUrl, addFunds } = useTrading();
+  const { addDeposit, qrCodeUrl } = useTransactions();
+  const { user } = useAuth();
+  const [amount, setAmount] = useState(0);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -38,6 +41,17 @@ export function DepositView() {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (!user) return;
+
+    if (amount <= 0) {
+        toast({
+            variant: 'destructive',
+            title: 'Invalid amount',
+            description: 'Please enter a valid deposit amount.',
+        });
+        return;
+    }
+
     if (!selectedFile) {
       toast({
         variant: 'destructive',
@@ -47,18 +61,17 @@ export function DepositView() {
       return;
     }
 
-    // In a real app, you would handle the file upload and a webhook would credit the account.
-    // For this prototype, we'll simulate a deposit of $1,000 for demonstration purposes.
-    const mockDepositAmount = 1000;
-    addFunds(mockDepositAmount);
-
-    toast({
-      title: 'Deposit Submitted',
-      description: `Your deposit request has been received. $${mockDepositAmount.toLocaleString()} has been added to your balance.`,
+    addDeposit({
+      userId: user.id,
+      userName: user.name,
+      amount: amount
     });
 
-    // Reset form and navigate back to profile
-    setSelectedFile(null);
+    toast({
+      title: 'Deposit Request Submitted',
+      description: `Your request to deposit $${amount.toLocaleString()} has been received and is pending approval.`,
+    });
+
     router.push('/profile');
   };
 
@@ -67,23 +80,25 @@ export function DepositView() {
       <Card>
         <CardHeader>
           <CardTitle>Deposit Funds</CardTitle>
-          <CardDescription>Scan the QR code with your payment app to deposit funds into your wallet.</CardDescription>
+          <CardDescription>Scan the QR code, then submit your deposit amount and payment proof.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6">
           <div className="p-4 bg-white rounded-lg">
              {qrCodeUrl ? <Image src={qrCodeUrl} alt="Deposit QR Code" width={192} height={192} className="h-48 w-48" /> : <QrCodeIcon className="h-48 w-48 text-black" />}
           </div>
-          <p className="text-sm text-muted-foreground text-center">
-            After payment, upload a screenshot of the transaction for verification.
-          </p>
+          
           <form onSubmit={handleSubmit} className="w-full space-y-4">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="space-y-2">
+                <Label htmlFor="amount">Deposit Amount (USD)</Label>
+                <Input id="amount" type="number" value={amount > 0 ? amount : ''} onChange={(e) => setAmount(Number(e.target.value))} placeholder="e.g., 1000" />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="picture">Payment Screenshot</Label>
               <Input id="picture" type="file" accept="image/*" onChange={handleFileChange} />
               {selectedFile && <p className="text-xs text-muted-foreground mt-1">File: {selectedFile.name}</p>}
             </div>
             <Button type="submit" className="w-full">
-              Submit for Verification
+              Submit Deposit Request
             </Button>
           </form>
         </CardContent>

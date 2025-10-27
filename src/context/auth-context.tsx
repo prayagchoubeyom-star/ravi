@@ -22,7 +22,7 @@ interface AuthContextType {
   logout: () => void;
   addUser: (user: Omit<User, 'balance' | 'id'>) => void;
   deleteUser: (userId: string) => void;
-  updateUserBalance: (userId: string, newBalance: number) => void;
+  updateUserBalance: (userId: string, newBalance: number | ((prevBalance: number) => number)) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,7 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(true);
         setUserRole(role);
         setUser(currentUser);
-        localStorage.setItem('user', JSON.stringify(currentUser)); // refresh user in storage
+        // Refresh user in storage if it's different from the state
+        if (JSON.stringify(currentUser) !== storedUserJson) {
+          localStorage.setItem('user', JSON.stringify(currentUser));
+        }
       } else {
         // Log out if user no longer exists
         logout();
@@ -103,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const addUser = (userData: Omit<User, 'balance' | 'id'>) => {
     const newUser: User = {
       ...userData,
-      id: (Math.random() * 1000000).toString(),
+      id: `user-${Date.now()}`,
       balance: 0,
     };
     setUsers(prevUsers => [newUser, ...prevUsers]);
@@ -113,16 +116,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
   };
   
-  const updateUserBalance = (userId: string, newBalance: number) => {
+  const updateUserBalance = (userId: string, update: number | ((prevBalance: number) => number)) => {
     setUsers(prevUsers =>
-      prevUsers.map(u => (u.id === userId ? { ...u, balance: newBalance } : u))
+      prevUsers.map(u => {
+        if (u.id === userId) {
+          const newBalance = typeof update === 'function' ? update(u.balance) : update;
+          return { ...u, balance: newBalance };
+        }
+        return u;
+      })
     );
-    // If the updated user is the currently logged-in user, update their state too
-    if (user && user.id === userId) {
-        const updatedUser = {...user, balance: newBalance};
-        setUser(updatedUser);
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-    }
   };
 
 

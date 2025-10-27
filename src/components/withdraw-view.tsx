@@ -17,6 +17,8 @@ import { z } from 'zod';
 import { useTrading } from '@/context/trading-context';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useTransactions } from '@/context/transaction-context';
+import { useAuth } from '@/context/auth-context';
 
 const withdrawalSchema = z.object({
   bankName: z.string().min(1, 'Bank name is required'),
@@ -26,7 +28,9 @@ const withdrawalSchema = z.object({
 });
 
 export function WithdrawView() {
-  const { balance, withdrawFunds } = useTrading();
+  const { balance } = useTrading();
+  const { addWithdrawal } = useTransactions();
+  const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -41,6 +45,8 @@ export function WithdrawView() {
   });
 
   function onSubmit(values: z.infer<typeof withdrawalSchema>) {
+    if (!user) return;
+
     if (values.amount > balance) {
       form.setError('amount', {
         type: 'manual',
@@ -49,12 +55,18 @@ export function WithdrawView() {
       return;
     }
 
-    // Deduct funds from balance
-    withdrawFunds(values.amount);
+    addWithdrawal({
+        userId: user.id,
+        userName: user.name,
+        amount: values.amount,
+        bankName: values.bankName,
+        accountNumber: values.accountNumber
+    });
+
 
     toast({
       title: 'Withdrawal Request Submitted',
-      description: `Your request to withdraw $${values.amount.toLocaleString()} has been received.`,
+      description: `Your request to withdraw $${values.amount.toLocaleString()} has been received and is pending approval.`,
     });
 
     router.push('/profile');

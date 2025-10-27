@@ -11,7 +11,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { adminDeposits, adminWithdrawals } from '@/lib/data';
 import { Button } from './ui/button';
 import { Trash2, CheckCircle, XCircle, UserPlus, Eye, Edit } from 'lucide-react';
 import { Badge } from './ui/badge';
@@ -33,6 +32,8 @@ import {
 } from "@/components/ui/dialog"
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
+import { useTransactions } from '@/context/transaction-context';
+import type { Deposit, Withdrawal } from '@/context/transaction-context';
 
 const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg aria-hidden="true" viewBox="0 0 128 128" {...props}>
@@ -51,6 +52,7 @@ const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export function AdminView() {
   const { qrCodeUrl, setQrCodeUrl, addFunds } = useAdmin();
   const { users, addUser, deleteUser } = useAuth();
+  const { deposits, withdrawals, updateDepositStatus, updateWithdrawalStatus } = useTransactions();
   const { toast } = useToast();
   const router = useRouter();
   const [newUserName, setNewUserName] = useState('');
@@ -110,6 +112,31 @@ export function AdminView() {
     toast({
         title: "Funds Updated",
         description: `Funds for ${userName} have been set to $${editFundsAmount.toLocaleString()}.`,
+    });
+  }
+
+  const handleDepositAction = (deposit: Deposit, newStatus: 'Approved' | 'Rejected') => {
+    updateDepositStatus(deposit.id, newStatus);
+    toast({
+        title: `Deposit ${newStatus}`,
+        description: `Request from ${deposit.userName} for $${deposit.amount.toLocaleString()} has been ${newStatus.toLowerCase()}.`
+    });
+  }
+
+  const handleWithdrawalAction = (withdrawal: Withdrawal, newStatus: 'Approved' | 'Rejected') => {
+    const user = users.find(u => u.id === withdrawal.userId);
+    if (newStatus === 'Approved' && user && user.balance < withdrawal.amount) {
+        toast({
+            variant: 'destructive',
+            title: "Insufficient Balance",
+            description: `${withdrawal.userName} does not have enough funds to approve this withdrawal.`,
+        });
+        return;
+    }
+    updateWithdrawalStatus(withdrawal.id, newStatus);
+     toast({
+        title: `Withdrawal ${newStatus}`,
+        description: `Request from ${withdrawal.userName} for $${withdrawal.amount.toLocaleString()} has been ${newStatus.toLowerCase()}.`
     });
   }
 
@@ -243,7 +270,7 @@ export function AdminView() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {adminDeposits.map((deposit) => (
+                                {deposits.map((deposit) => (
                                     <TableRow key={deposit.id}>
                                         <TableCell>{deposit.userName}</TableCell>
                                         <TableCell>${deposit.amount.toLocaleString()}</TableCell>
@@ -251,10 +278,10 @@ export function AdminView() {
                                             <Badge variant={deposit.status === 'Approved' ? 'default' : deposit.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{deposit.status}</Badge>
                                         </TableCell>
                                         <TableCell className="text-right space-x-1">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'} onClick={() => handleDepositAction(deposit, 'Approved')}>
                                                 <CheckCircle className="h-4 w-4 text-green-500" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deposit.status !== 'Pending'} onClick={() => handleDepositAction(deposit, 'Rejected')}>
                                                 <XCircle className="h-4 w-4 text-red-500" />
                                             </Button>
                                         </TableCell>
@@ -285,7 +312,7 @@ export function AdminView() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {adminWithdrawals.map((withdrawal) => (
+                                {withdrawals.map((withdrawal) => (
                                     <TableRow key={withdrawal.id}>
                                         <TableCell>{withdrawal.userName}</TableCell>
                                         <TableCell>${withdrawal.amount.toLocaleString()}</TableCell>
@@ -297,10 +324,10 @@ export function AdminView() {
                                             <Badge variant={withdrawal.status === 'Approved' ? 'default' : withdrawal.status === 'Pending' ? 'secondary' : 'destructive'} className="capitalize">{withdrawal.status}</Badge>
                                         </TableCell>
                                         <TableCell className="text-right space-x-1">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'} onClick={() => handleWithdrawalAction(withdrawal, 'Approved')}>
                                                 <CheckCircle className="h-4 w-4 text-green-500" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={withdrawal.status !== 'Pending'} onClick={() => handleWithdrawalAction(withdrawal, 'Rejected')}>
                                                 <XCircle className="h-4 w-4 text-red-500" />
                                             </Button>
                                         </TableCell>

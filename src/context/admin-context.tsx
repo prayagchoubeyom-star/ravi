@@ -2,8 +2,8 @@
 'use client';
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useTrading } from './trading-context';
 import { useAuth } from './auth-context';
+import { useTransactions } from './transaction-context';
 
 interface AdminContextType {
   qrCodeUrl: string | null;
@@ -14,7 +14,7 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  const { qrCodeUrl, setQrCodeUrl } = useTrading();
+  const { qrCodeUrl, setQrCodeUrl } = useTransactions();
   const { updateUserBalance } = useAuth();
 
   const addFunds = (amount: number, userId: string) => {

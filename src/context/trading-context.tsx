@@ -11,14 +11,12 @@ interface TradingContextType {
   positions: Position[];
   watchlist: string[];
   balance: number;
-  qrCodeUrl: string | null;
   addToWatchlist: (ticker: string) => void;
   removeFromWatchlist: (ticker: string) => void;
   addOrder: (order: Omit<Order, 'id' | 'status' | 'date'>) => void;
   closePosition: (cryptoTicker: string, currentPrice: number) => void;
-  addFunds: (amount: number) => void; // Removed userId from here
+  addFunds: (amount: number) => void;
   withdrawFunds: (amount: number) => void;
-  setQrCodeUrl: (url: string) => void;
 }
 
 const TradingContext = createContext<TradingContextType | undefined>(undefined);
@@ -27,7 +25,6 @@ export function TradingProvider({ children }: { children: ReactNode }) {
   const { user, updateUserBalance } = useAuth();
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [positions, setPositions] = useState<Position[]>(initialPositions);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   // Balance is now derived from the authenticated user
   const balance = user?.balance ?? 0;
@@ -136,7 +133,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <TradingContext.Provider value={{ orders, positions, watchlist, balance, qrCodeUrl, addToWatchlist, removeFromWatchlist, addOrder, closePosition, addFunds, withdrawFunds, setQrCodeUrl }}>
+    <TradingContext.Provider value={{ orders, positions, watchlist, balance, addToWatchlist, removeFromWatchlist, addOrder, closePosition, addFunds, withdrawFunds }}>
       {children}
     </TradingContext.Provider>
   );

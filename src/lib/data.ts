@@ -1,4 +1,5 @@
 
+import type { Deposit, Withdrawal } from "@/context/transaction-context";
 
 export type Crypto = {
   id: string;
@@ -87,17 +88,17 @@ export const adminUsers = [
     { id: '1', name: 'Alex Doe', email: 'alex.doe@example.com', password: 'password123', balance: 50000 },
     { id: '2', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password123', balance: 75000 },
     { id: '3', name: 'John Johnson', email: 'john.johnson@example.com', password: 'password123', balance: 10000 },
-    { id: '4', name: 'Test User', email: 'test@gmail.com', password: 'password123', balance: 500 },
+    { id: '4', name: 'Test User', email: 'test@gmail.com', password: 'password123', balance: 500000 },
     { id: '5', name: 'Test User 1', email: 'test1@gmail.com', password: 'password123', balance: 500 },
 ];
 
-export const adminDeposits = [
+export const adminDeposits: Deposit[] = [
     { id: 'dep1', userId: '2', userName: 'Jane Smith', amount: 1000, status: 'Pending', date: '2024-05-22T10:00:00Z' },
     { id: 'dep2', userId: '1', userName: 'Alex Doe', amount: 500, status: 'Approved', date: '2024-05-21T15:30:00Z' },
     { id: 'dep3', userId: '3', userName: 'John Johnson', amount: 2500, status: 'Rejected', date: '2024-05-20T12:00:00Z' },
 ];
 
-export const adminWithdrawals = [
+export const adminWithdrawals: Withdrawal[] = [
     { id: 'wd1', userId: '1', userName: 'Alex Doe', amount: 200, status: 'Approved', bankName: 'Global Bank', accountNumber: '...1234', date: '2024-05-22T11:00:00Z' },
     { id: 'wd2', userId: '2', userName: 'Jane Smith', amount: 1500, status: 'Pending', bankName: 'National Bank', accountNumber: '...5678', date: '2024-05-23T09:45:00Z' },
 ];
