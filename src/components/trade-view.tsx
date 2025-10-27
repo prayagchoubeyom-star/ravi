@@ -23,11 +23,12 @@ import { useMemo } from 'react';
 
 const orderSchema = z.object({
   type: z.enum(['buy', 'sell']),
-  product: z.enum(['intraday', 'longterm']),
-  orderType: z.enum(['market', 'limit']),
+  product: z.enum(['market', 'limit']),
   quantity: z.coerce.number().positive('Quantity must be positive'),
   price: z.coerce.number().optional(),
-}).refine(data => data.orderType === 'limit' ? data.price && data.price > 0 : true, {
+  target: z.coerce.number().optional(),
+  stoploss: z.coerce.number().optional(),
+}).refine(data => data.product === 'limit' ? data.price && data.price > 0 : true, {
     message: 'Price is required for limit orders',
     path: ['price'],
 });
@@ -49,17 +50,18 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
         resolver: zodResolver(orderSchema),
         defaultValues: { 
             type: 'buy', 
-            product: 'longterm', 
-            orderType: 'limit',
+            product: 'limit',
             quantity: 0,
-            price: crypto.price
+            price: crypto.price,
+            target: 0,
+            stoploss: 0
         },
     });
     
-    const orderType = form.watch('orderType');
+    const productType = form.watch('product');
     const orderSide = form.watch('type');
     const quantity = form.watch('quantity');
-    const price = form.watch('price') || crypto.price;
+    const price = productType === 'market' ? crypto.price : form.watch('price') || crypto.price;
     const margin = quantity * price;
 
     function onSubmit(values: z.infer<typeof orderSchema>) {
@@ -83,7 +85,7 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
             cryptoTicker: crypto.ticker,
             type: values.type === 'buy' ? 'Buy' : 'Sell',
             amount: values.quantity,
-            price: values.orderType === 'limit' ? values.price! : crypto.price,
+            price: values.product === 'limit' ? values.price! : crypto.price,
         });
 
         toast({
@@ -138,42 +140,20 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                                 <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
                                     <FormItem>
                                         <FormControl>
-                                            <RadioGroupItem value="intraday" id="intraday" className="peer sr-only" />
+                                            <RadioGroupItem value="market" id="market-product" className="peer sr-only" />
                                         </FormControl>
-                                        <Label htmlFor="intraday" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                            Intraday <span className="text-xs text-muted-foreground">MIS</span>
+                                        <Label htmlFor="market-product" className="flex flex-col items-center justify-center text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                            Market
                                         </Label>
                                     </FormItem>
                                     <FormItem>
                                         <FormControl>
-                                            <RadioGroupItem value="longterm" id="longterm" className="peer sr-only" />
+                                            <RadioGroupItem value="limit" id="limit-product" className="peer sr-only" />
                                         </FormControl>
-                                        <Label htmlFor="longterm" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                            Investment <span className="text-xs text-muted-foreground">CNC</span>
+                                        <Label htmlFor="limit-product" className="flex flex-col items-center justify-center text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                            Limit
                                         </Label>
                                     </FormItem>
-                                </RadioGroup>
-                            </FormItem>
-                        )}
-                    />
-
-                     <FormField
-                        control={form.control}
-                        name="orderType"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Order Type</FormLabel>
-                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-2">
-                                     {['Market', 'Limit'].map(type => (
-                                         <FormItem key={type}>
-                                            <FormControl>
-                                                <RadioGroupItem value={type.toLowerCase()} id={type.toLowerCase()} className="peer sr-only" />
-                                            </FormControl>
-                                            <Label htmlFor={type.toLowerCase()} className={cn("text-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary")}>
-                                                {type}
-                                            </Label>
-                                        </FormItem>
-                                     ))}
                                 </RadioGroup>
                             </FormItem>
                         )}
@@ -196,12 +176,36 @@ export function TradeView({ crypto, onClose }: TradeViewProps) {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Price</FormLabel>
-                                <FormControl><Input type="number" step="any" {...field} disabled={orderType === 'market'} placeholder={orderType === 'market' ? 'At Market' : ''} className="text-base" /></FormControl>
+                                <FormControl><Input type="number" step="any" {...field} disabled={productType === 'market'} placeholder={productType === 'market' ? 'At Market' : ''} className="text-base" /></FormControl>
                                 </FormItem>
                             )}
                         />
                     </div>
                     {form.formState.errors.quantity && <p className="text-sm font-medium text-destructive">{form.formState.errors.quantity.message}</p>}
+                    {form.formState.errors.price && <p className="text-sm font-medium text-destructive">{form.formState.errors.price.message}</p>}
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="target"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Target (Optional)</FormLabel>
+                                <FormControl><Input type="number" step="any" {...field} className="text-base" /></FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="stoploss"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Stop-loss (Optional)</FormLabel>
+                                <FormControl><Input type="number" step="any" {...field} className="text-base" /></FormControl>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                 </div>
 
                 <div className="p-4 border-t mt-auto bg-background">
