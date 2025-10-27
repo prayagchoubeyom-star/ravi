@@ -59,9 +59,10 @@ export async function GET() {
 {
     console.error("Error in /api/crypto route:", error);
     // In case of an error, return an empty array with a 500 status code
-    return NextResponse.json([], { status: 500, statusText: (error as Error).message || 'Internal Server Error' });
+    return NextResponse.json({ message: (error as Error).message || 'Internal Server Error' }, { status: 500 });
   }
 }
 
 // This tells Next.js to treat this route as dynamic, ensuring it's not cached incorrectly.
 export const dynamic = 'force-dynamic';
+
