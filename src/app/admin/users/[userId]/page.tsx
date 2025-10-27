@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { adminUsers, initialOrders } from "@/lib/data";
+import { initialOrders } from "@/lib/data";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -22,15 +22,17 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProtectedRoute } from "@/components/protected-route";
+import { useAuth } from "@/context/auth-context";
 
 
 export default function UserDetailsPage({ params }: { params: { userId: string } }) {
     const router = useRouter();
     const { toast } = useToast();
     const { userId } = params;
+    const { users } = useAuth();
     const [editPrice, setEditPrice] = useState(0);
 
-    const user = adminUsers.find(u => u.id === userId);
+    const user = users.find(u => u.id === userId);
 
     if (!user) {
         return (
