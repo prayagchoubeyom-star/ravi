@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TradingProvider } from '@/context/trading-context';
 
 export const metadata: Metadata = {
-  title: 'TradeWatch',
+  title: 'wellfiree',
   description: 'A crypto trading app to watch and trade cryptocurrencies.',
 };
 
