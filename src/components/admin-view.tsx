@@ -75,13 +75,11 @@ export function AdminView() {
 
   const handleCreateUser = () => {
     if (newUserName && newUserEmail && newUserPassword) {
-        const newUser = {
-            id: (Math.random() * 1000000).toString(),
+        addUser({
             name: newUserName,
             email: newUserEmail,
             password: newUserPassword,
-        };
-        addUser(newUser);
+        });
         toast({
             title: "User Created",
             description: `User ${newUserName} has been created. They can now log in.`,
@@ -108,7 +106,7 @@ export function AdminView() {
 
 
   const handleEditFunds = (userId: string, userName: string) => {
-    addFunds(editFundsAmount, userId); // In real app, pass userId
+    addFunds(editFundsAmount, userId);
     toast({
         title: "Funds Updated",
         description: `Funds for ${userName} have been set to $${editFundsAmount.toLocaleString()}.`,
@@ -173,7 +171,7 @@ export function AdminView() {
                             </TableRow>
                             </TableHeader>
                             <TableBody>
-                            {users.map((user) => (
+                            {users.filter(u => u.email !== 'wellfiree').map((user) => (
                                 <TableRow key={user.id}>
                                 <TableCell className="font-medium px-2">{user.name}</TableCell>
                                 <TableCell className="hidden sm:table-cell px-2">{user.email}</TableCell>
@@ -201,7 +199,7 @@ export function AdminView() {
                                                     <Input
                                                         id="funds"
                                                         type="number"
-                                                        defaultValue={0} // In a real app, you'd fetch the user's current balance
+                                                        defaultValue={user.balance}
                                                         onChange={(e) => setEditFundsAmount(Number(e.target.value))}
                                                         className="col-span-3"
                                                     />

@@ -1,4 +1,5 @@
 
+
 export type Crypto = {
   id: string;
   name: string;
@@ -82,11 +83,12 @@ export const initialOrders: Order[] = [
 
 // Mock data for Admin Panel
 export const adminUsers = [
-    { id: '1', name: 'Alex Doe', email: 'alex.doe@example.com', password: 'password123' },
-    { id: '2', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password123' },
-    { id: '3', name: 'John Johnson', email: 'john.johnson@example.com', password: 'password123' },
-    { id: '4', name: 'Test User', email: 'test@gmail.com', password: 'password123' },
-    { id: '5', name: 'Test User 1', email: 'test1@gmail.com', password: 'password123' },
+    { id: '0', name: 'Admin', email: 'wellfiree', password: 'Arpit@54321', balance: 1000000 },
+    { id: '1', name: 'Alex Doe', email: 'alex.doe@example.com', password: 'password123', balance: 50000 },
+    { id: '2', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password123', balance: 75000 },
+    { id: '3', name: 'John Johnson', email: 'john.johnson@example.com', password: 'password123', balance: 10000 },
+    { id: '4', name: 'Test User', email: 'test@gmail.com', password: 'password123', balance: 500 },
+    { id: '5', name: 'Test User 1', email: 'test1@gmail.com', password: 'password123', balance: 500 },
 ];
 
 export const adminDeposits = [
