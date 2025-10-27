@@ -95,6 +95,15 @@ export function AdminView() {
         });
     }
   };
+  
+  const handleDeleteUser = (userId: string) => {
+    setAdminUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+    toast({
+        title: "User Deleted",
+        description: `The user has been removed.`,
+    });
+  };
+
 
   const handleEditFunds = (userId: string, userName: string) => {
     addFunds(editFundsAmount, userId); // In real app, pass userId
@@ -166,45 +175,47 @@ export function AdminView() {
                                 <TableRow key={user.id}>
                                 <TableCell className="font-medium">{user.name}</TableCell>
                                 <TableCell className="hidden sm:table-cell">{user.email}</TableCell>
-                                <TableCell className="text-right space-x-1">
-                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
-                                        <Eye className="h-4 w-4" />
-                                    </Button>
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" size="icon" className="h-8 w-8">
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Edit Funds for {user.name}</DialogTitle>
-                                                <DialogDescription>Set the new wallet balance for this user.</DialogDescription>
-                                            </DialogHeader>
-                                            <div className="grid gap-4 py-4">
-                                                <div className="grid grid-cols-4 items-center gap-4">
-                                                <Label htmlFor="funds" className="text-right">
-                                                    Balance
-                                                </Label>
-                                                <Input
-                                                    id="funds"
-                                                    type="number"
-                                                    defaultValue={0} // In a real app, you'd fetch the user's current balance
-                                                    onChange={(e) => setEditFundsAmount(Number(e.target.value))}
-                                                    className="col-span-3"
-                                                />
+                                <TableCell className="text-right">
+                                    <div className="flex justify-end flex-wrap gap-1">
+                                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
+                                            <Eye className="h-4 w-4" />
+                                        </Button>
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="icon" className="h-8 w-8">
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Edit Funds for {user.name}</DialogTitle>
+                                                    <DialogDescription>Set the new wallet balance for this user.</DialogDescription>
+                                                </DialogHeader>
+                                                <div className="grid gap-4 py-4">
+                                                    <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label htmlFor="funds" className="text-right">
+                                                        Balance
+                                                    </Label>
+                                                    <Input
+                                                        id="funds"
+                                                        type="number"
+                                                        defaultValue={0} // In a real app, you'd fetch the user's current balance
+                                                        onChange={(e) => setEditFundsAmount(Number(e.target.value))}
+                                                        className="col-span-3"
+                                                    />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <DialogFooter>
-                                                <DialogClose asChild>
-                                                    <Button onClick={() => handleEditFunds(user.id, user.name)}>Save changes</Button>
-                                                </DialogClose>
-                                            </DialogFooter>
-                                        </DialogContent>
-                                    </Dialog>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                        <Trash2 className="h-4 w-4 text-red-500" />
-                                    </Button>
+                                                <DialogFooter>
+                                                    <DialogClose asChild>
+                                                        <Button onClick={() => handleEditFunds(user.id, user.name)}>Save changes</Button>
+                                                    </DialogClose>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteUser(user.id)}>
+                                            <Trash2 className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                    </div>
                                 </TableCell>
                                 </TableRow>
                             ))}
@@ -327,3 +338,5 @@ export function AdminView() {
     </div>
   );
 }
+
+    
