@@ -13,7 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { adminUsers, adminDeposits, adminWithdrawals } from '@/lib/data';
 import { Button } from './ui/button';
-import { Trash2, CheckCircle, XCircle, Circle, DollarSign, Upload } from 'lucide-react';
+import { Trash2, CheckCircle, XCircle, DollarSign, Upload, UserPlus, Eye, Edit } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useAdmin } from '@/context/admin-context';
@@ -21,6 +21,17 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog"
+import { useRouter } from 'next/navigation';
 
 const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg aria-hidden="true" viewBox="0 0 128 128" {...props}>
@@ -39,6 +50,11 @@ const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export function AdminView() {
   const { qrCodeUrl, setQrCodeUrl, addFunds } = useAdmin();
   const { toast } = useToast();
+  const router = useRouter();
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [editFundsAmount, setEditFundsAmount] = useState(0);
 
   const handleQrCodeUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -55,14 +71,32 @@ export function AdminView() {
     }
   };
 
-  const handleAddFunds = (userId: string, userName: string) => {
-    // In a real app, you'd likely use a dialog to ask for the amount.
-    // For this prototype, we'll just add a fixed amount.
-    const amountToAdd = 1000;
-    addFunds(amountToAdd);
+  const handleCreateUser = () => {
+    // This is a mock implementation.
+    // In a real app, this would call an API to create a user.
+    if (newUserName && newUserEmail && newUserPassword) {
+        console.log("Creating user:", { name: newUserName, email: newUserEmail });
+        toast({
+            title: "User Created (Mock)",
+            description: `User ${newUserName} has been created.`,
+        });
+        setNewUserName('');
+        setNewUserEmail('');
+        setNewUserPassword('');
+    } else {
+        toast({
+            variant: 'destructive',
+            title: "Error",
+            description: "Please fill all fields to create a user.",
+        });
+    }
+  };
+
+  const handleEditFunds = (userId: string, userName: string) => {
+    addFunds(editFundsAmount, userId); // In real app, pass userId
     toast({
-        title: "Funds Added",
-        description: `$${amountToAdd} has been added to ${userName}'s wallet.`,
+        title: "Funds Updated",
+        description: `Funds for ${userName} have been set to $${editFundsAmount.toLocaleString()}.`,
     });
   }
 
@@ -77,9 +111,41 @@ export function AdminView() {
         </TabsList>
         <TabsContent value="users">
             <Card>
-                <CardHeader>
-                    <CardTitle>User Management</CardTitle>
-                    <CardDescription>View and manage all registered users.</CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>User Management</CardTitle>
+                        <CardDescription>View and manage all registered users.</CardDescription>
+                    </div>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button><UserPlus className="h-4 w-4 mr-2" /> Create User</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Create New User</DialogTitle>
+                                <DialogDescription>Enter the details for the new user.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="name" className="text-right">Name</Label>
+                                    <Input id="name" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} className="col-span-3" />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="email" className="text-right">Email</Label>
+                                    <Input id="email" type="email" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} className="col-span-3" />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="password"  className="text-right">Password</Label>
+                                    <Input id="password" type="password" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} className="col-span-3" />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button type="button" onClick={handleCreateUser}>Create User</Button>
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </CardHeader>
                 <CardContent>
                     <div className="rounded-lg border">
@@ -97,9 +163,41 @@ export function AdminView() {
                                 <TableCell className="font-medium">{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell className="text-right space-x-1">
-                                    <Button variant="outline" size="sm" onClick={() => handleAddFunds(user.id, user.name)}>
-                                        <DollarSign className="h-4 w-4 mr-2" /> Add Funds
+                                    <Button variant="outline" size="sm" onClick={() => router.push(`/admin/users/${user.id}`)}>
+                                        <Eye className="h-4 w-4" />
                                     </Button>
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" size="sm">
+                                                <Edit className="h-4 w-4" />
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Edit Funds for {user.name}</DialogTitle>
+                                                <DialogDescription>Set the new wallet balance for this user.</DialogDescription>
+                                            </DialogHeader>
+                                            <div className="grid gap-4 py-4">
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="funds" className="text-right">
+                                                    Balance
+                                                </Label>
+                                                <Input
+                                                    id="funds"
+                                                    type="number"
+                                                    defaultValue={0} // In a real app, you'd fetch the user's current balance
+                                                    onChange={(e) => setEditFundsAmount(Number(e.target.value))}
+                                                    className="col-span-3"
+                                                />
+                                                </div>
+                                            </div>
+                                            <DialogFooter>
+                                                <DialogClose asChild>
+                                                    <Button onClick={() => handleEditFunds(user.id, user.name)}>Save changes</Button>
+                                                </DialogClose>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
                                     <Button variant="ghost" size="icon">
                                         <Trash2 className="h-4 w-4 text-red-500" />
                                     </Button>

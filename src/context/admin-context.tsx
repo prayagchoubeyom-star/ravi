@@ -7,7 +7,7 @@ import { useTrading } from './trading-context';
 interface AdminContextType {
   qrCodeUrl: string | null;
   setQrCodeUrl: (url: string) => void;
-  addFunds: (amount: number) => void;
+  addFunds: (amount: number, userId?: string) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
