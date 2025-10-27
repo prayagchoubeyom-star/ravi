@@ -1,3 +1,4 @@
+
 export type Crypto = {
   id: string;
   name: string;
@@ -77,5 +78,23 @@ export const initialOrders: Order[] = [
   { id: '3', cryptoTicker: 'SOL', type: 'Buy', status: 'Open', amount: 50, price: 148, date: '2024-05-21T09:00:00Z' },
   { id: '4', cryptoTicker: 'ADA', type: 'Buy', status: 'Cancelled', amount: 10000, price: 0.44, date: '2024-05-19T14:00:00Z' },
   { id: '5', cryptoTicker: 'XRP', type: 'Sell', status: 'Open', amount: 5000, price: 0.55, date: '2024-05-21T10:15:00Z' },
+];
+
+// Mock data for Admin Panel
+export const adminUsers = [
+    { id: '1', name: 'Alex Doe', email: 'alex.doe@example.com' },
+    { id: '2', name: 'Jane Smith', email: 'jane.smith@example.com' },
+    { id: '3', name: 'John Johnson', email: 'john.johnson@example.com' },
+];
+
+export const adminDeposits = [
+    { id: 'dep1', userId: '2', userName: 'Jane Smith', amount: 1000, status: 'Pending', date: '2024-05-22T10:00:00Z' },
+    { id: 'dep2', userId: '1', userName: 'Alex Doe', amount: 500, status: 'Approved', date: '2024-05-21T15:30:00Z' },
+    { id: 'dep3', userId: '3', userName: 'John Johnson', amount: 2500, status: 'Rejected', date: '2024-05-20T12:00:00Z' },
+];
+
+export const adminWithdrawals = [
+    { id: 'wd1', userId: '1', userName: 'Alex Doe', amount: 200, status: 'Approved', bankName: 'Global Bank', accountNumber: '...1234', date: '2024-05-22T11:00:00Z' },
+    { id: 'wd2', userId: '2', userName: 'Jane Smith', amount: 1500, status: 'Pending', bankName: 'National Bank', accountNumber: '...5678', date: '2024-05-23T09:45:00Z' },
 ];
 
