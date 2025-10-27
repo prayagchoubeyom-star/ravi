@@ -176,7 +176,7 @@ export function AdminView() {
                                 <TableCell className="font-medium px-2">{user.name}</TableCell>
                                 <TableCell className="hidden sm:table-cell px-2">{user.email}</TableCell>
                                 <TableCell className="text-right px-2">
-                                    <div className="flex items-center justify-end gap-1">
+                                    <div className="flex flex-wrap items-center justify-end gap-1">
                                         <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/admin/users/${user.id}`)}>
                                             <Eye className="h-4 w-4" />
                                         </Button>
@@ -338,5 +338,7 @@ export function AdminView() {
     </div>
   );
 }
+
+    
 
     
