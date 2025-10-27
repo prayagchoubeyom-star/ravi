@@ -52,7 +52,7 @@ export default function UserDetailsPage({ params }: { params: { userId: string }
     }
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute adminOnly={true}>
       <AppHeader title={`${user.name}'s Details`} hasBack />
       <div className="p-4 space-y-4">
         <Card>

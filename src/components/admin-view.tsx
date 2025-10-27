@@ -51,7 +51,7 @@ export function AdminView() {
   const { qrCodeUrl, setQrCodeUrl, addFunds } = useAdmin();
   const { toast } = useToast();
   const router = useRouter();
-  const [adminUsers, setAdminUsers] = useState(initialAdminUsers);
+  const [adminUsers, setAdminUsersState] = useState(initialAdminUsers);
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -78,11 +78,12 @@ export function AdminView() {
             id: (Math.random() * 1000000).toString(),
             name: newUserName,
             email: newUserEmail,
+            password: newUserPassword,
         };
-        setAdminUsers(prevUsers => [newUser, ...prevUsers]);
+        setAdminUsersState(prevUsers => [newUser, ...prevUsers]);
         toast({
             title: "User Created",
-            description: `User ${newUserName} has been created.`,
+            description: `User ${newUserName} has been created. In a real app, this would be saved to a database.`,
         });
         setNewUserName('');
         setNewUserEmail('');
@@ -97,7 +98,7 @@ export function AdminView() {
   };
   
   const handleDeleteUser = (userId: string) => {
-    setAdminUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+    setAdminUsersState(prevUsers => prevUsers.filter(user => user.id !== userId));
     toast({
         title: "User Deleted",
         description: `The user has been removed.`,
@@ -338,7 +339,3 @@ export function AdminView() {
     </div>
   );
 }
-
-    
-
-    

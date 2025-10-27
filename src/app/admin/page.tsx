@@ -6,7 +6,7 @@ import { AdminProvider } from "@/context/admin-context";
 
 export default function AdminPage() {
   return (
-    <ProtectedRoute>
+    <ProtectedRoute adminOnly={true}>
       <AppHeader title="Admin Panel" />
       <AdminProvider>
         <AdminView />

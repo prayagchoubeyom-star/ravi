@@ -27,17 +27,17 @@ const navItems: NavItem[] = [
 
 const BottomNav = () => {
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
+  const { userRole } = useAuth();
 
   const filteredNavItems = navItems.filter(item => {
     if (item.adminOnly) {
-      return isAuthenticated;
+      return userRole === 'admin';
     }
-    return true;
+    return userRole !== 'admin'; // Hide user items for admin
   });
 
-  // If login page, don't show nav
-  if (pathname === '/login') return null;
+  // If login page, or no role, don't show nav
+  if (pathname === '/login' || !userRole) return null;
 
   return (
     <nav className="border-t bg-background/95 backdrop-blur-sm">

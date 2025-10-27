@@ -14,22 +14,17 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
-  const router = useRouter();
   const { toast } = useToast();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(username, password)) {
+    const success = login(username, password);
+    
+    if (success) {
       toast({
         title: 'Login Successful',
         description: 'Welcome!',
       });
-      // Redirect admin to admin page, other users to home
-      if (username === 'wellfiree') {
-        router.push('/admin');
-      } else {
-        router.push('/');
-      }
     } else {
       toast({
         variant: 'destructive',

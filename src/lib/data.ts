@@ -82,9 +82,9 @@ export const initialOrders: Order[] = [
 
 // Mock data for Admin Panel
 export const adminUsers = [
-    { id: '1', name: 'Alex Doe', email: 'alex.doe@example.com' },
-    { id: '2', name: 'Jane Smith', email: 'jane.smith@example.com' },
-    { id: '3', name: 'John Johnson', email: 'john.johnson@example.com' },
+    { id: '1', name: 'Alex Doe', email: 'alex.doe@example.com', password: 'password123' },
+    { id: '2', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password123' },
+    { id: '3', name: 'John Johnson', email: 'john.johnson@example.com', password: 'password123' },
 ];
 
 export const adminDeposits = [
@@ -97,4 +97,3 @@ export const adminWithdrawals = [
     { id: 'wd1', userId: '1', userName: 'Alex Doe', amount: 200, status: 'Approved', bankName: 'Global Bank', accountNumber: '...1234', date: '2024-05-22T11:00:00Z' },
     { id: 'wd2', userId: '2', userName: 'Jane Smith', amount: 1500, status: 'Pending', bankName: 'National Bank', accountNumber: '...5678', date: '2024-05-23T09:45:00Z' },
 ];
-
