@@ -72,14 +72,16 @@ export const MainLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="relative flex h-full flex-col bg-background">
-      <div className={cn("flex-1 overflow-hidden", showNav ? "pb-16" : "")}>
+      <div className={cn("flex-1 overflow-y-auto", showNav ? "pb-16" : "")}>
         <ScrollArea className="h-full">
             {children}
         </ScrollArea>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 z-20">
-        <BottomNav />
-      </div>
+      {showNav && (
+        <div className="absolute bottom-0 left-0 right-0 z-20">
+          <BottomNav />
+        </div>
+      )}
     </div>
   );
 };
