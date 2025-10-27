@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -7,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useTrading } from '@/context/trading-context';
+import Image from 'next/image';
 
 const QrCodeIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg aria-hidden="true" viewBox="0 0 128 128" {...props}>
@@ -25,6 +28,7 @@ export function DepositView() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+  const { qrCodeUrl } = useTrading();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -63,7 +67,7 @@ export function DepositView() {
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6">
           <div className="p-4 bg-white rounded-lg">
-             <QrCodeIcon className="h-48 w-48 text-black" />
+             {qrCodeUrl ? <Image src={qrCodeUrl} alt="Deposit QR Code" width={192} height={192} className="h-48 w-48" /> : <QrCodeIcon className="h-48 w-48 text-black" />}
           </div>
           <p className="text-sm text-muted-foreground text-center">
             After payment, upload a screenshot of the transaction for verification.

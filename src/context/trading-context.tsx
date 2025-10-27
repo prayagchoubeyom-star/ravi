@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -9,10 +10,13 @@ interface TradingContextType {
   positions: Position[];
   watchlist: string[];
   balance: number;
+  qrCodeUrl: string | null;
   addToWatchlist: (ticker: string) => void;
   removeFromWatchlist: (ticker: string) => void;
   addOrder: (order: Omit<Order, 'id' | 'status' | 'date'>) => void;
   closePosition: (cryptoTicker: string) => void;
+  addFunds: (amount: number) => void;
+  setQrCodeUrl: (url: string) => void;
 }
 
 const TradingContext = createContext<TradingContextType | undefined>(undefined);
@@ -28,12 +32,17 @@ export function TradingProvider({ children }: { children: ReactNode }) {
     }
     return initialCryptos.map(c => c.ticker);
   });
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
         localStorage.setItem('watchlist', JSON.stringify(watchlist));
     }
   }, [watchlist]);
+
+  const addFunds = (amount: number) => {
+    setBalance(prev => prev + amount);
+  }
 
   const addToWatchlist = (ticker: string) => {
     setWatchlist(prev => {
@@ -138,7 +147,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <TradingContext.Provider value={{ orders, positions, watchlist, balance, addToWatchlist, removeFromWatchlist, addOrder, closePosition }}>
+    <TradingContext.Provider value={{ orders, positions, watchlist, balance, qrCodeUrl, addToWatchlist, removeFromWatchlist, addOrder, closePosition, addFunds, setQrCodeUrl }}>
       {children}
     </TradingContext.Provider>
   );
